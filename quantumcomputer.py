@@ -5,16 +5,16 @@ import random # for random number generation
 from tabulate import tabulate # for nice printing
 from math import sqrt,pi,e # some common function
 import qutip as qp
-
+#test
 
 ####
 ## States
 ####
-    
+
 class State:
 # call with State(number_of_qubits, list_of_basisstatepositions_OR_amplitudes)
 
-    # ground state as default instance of a State 
+    # ground state as default instance of a State
     def __init__(self, lis = [0]):
 
         # if the list has less entries than amplitudes 2**n,
@@ -35,12 +35,12 @@ class State:
         elif len(lis) == 2**num_qubits:
             #TODO: check if normalised
             self.state = np.array(lis)
-            
+
         else:
             raise StandardError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid amplitudes or positions.')
 
-                
+
     def print_amplitudes(self):
         np.set_printoptions(precision=3, suppress = True)
         print self.state
@@ -73,7 +73,7 @@ class State:
 
 class Gate:
 
-    # identity as default instance of a Gate 
+    # identity as default instance of a Gate
     def __init__(self, unitary, qubit_pos = -1):
         #if not is_unitary(unitary):
         #    raise StandardError('Cannot create new Gate().'\
@@ -94,8 +94,8 @@ class Gate:
             for k in range(num_qubits-2):
                  u_new = np.kron(u_new, unitary_list[k+2])
             self.gate = u_new
-                
-    
+
+
     # define elementary gates
     i_ = np.complex(0,1)
     H = 1./sqrt(2)*np.matrix('1 1; 1 -1')
