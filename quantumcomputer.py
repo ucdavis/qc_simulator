@@ -108,7 +108,7 @@ class Gate:
     T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
     Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]])
     #TODO: CNOT
-
+# hallo
 
 
 #SCRIPT
