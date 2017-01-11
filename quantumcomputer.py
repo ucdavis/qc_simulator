@@ -187,10 +187,20 @@ class Gate:
 class ControlledGate:
 
     def __init__(self, unitary, control, target):
-        if num_qubits == 2:
-            self.gate = np.kron(State.zero_state*np.transpose(State.zero_state), Gate.eye) + np.kron(State.one_state*np.transpose(State.one_state), unitary)
-
-
+        #if num_qubits == 2:
+            #self.gate = np.kron(State.zero_state*np.transpose(State.zero_state), Gate.eye) + np.kron(State.one_state*np.transpose(State.one_state), unitary)
+        self.gate = np.zeros((2**num_qubits,2**num_qubits))
+        #qubit_list = [1 if control == i else 0 for i in range(2**(num_qubits))]
+        qubit_list = [0,1,0,1]
+        print qubit_list
+        #State(qubit_list).print_full_pretty()
+        print np.transpose(np.matrix(State(qubit_list).state))*np.matrix(State(qubit_list).state)
+        self.gate = np.zeros((2**num_qubits,2**num_qubits))
+        for k in range(num_qubits):
+            if k == control:
+                self.gate += np.kron(np.transpose(np.matrix(State(qubit_list).state))*np.matrix(State(qubit_list).state), unitary)
+            else:
+                self.gate += np.kron(np.transpose(np.matrix(State(qubit_list).state))*np.matrix(State(qubit_list).state), Gate.eye)
 #SCRIPT
 
 # DO NOT CHANGE THE GLOBAL DEFINITION OF num_qubits!
@@ -204,8 +214,9 @@ newGate = Gate(Gate.X, 0)
 #print myState1.state
 myState1.state = newGate.gate*np.matrix(myState1.state).transpose()
 #print np.matrix(myState1.state).transpose()
-#print myState1.state
-CX = ControlledGate(Gate.X,0,1)
+print myState1.state
+CX = ControlledGate(Gate.X,1,0)
+myState1.state = CX.gate*myState1.state
 print CX.gate
 myState1.print_full_pretty()
 #myState1.project_on_blochsphere()
