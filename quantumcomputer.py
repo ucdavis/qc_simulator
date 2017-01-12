@@ -319,22 +319,26 @@ class ControlledGate:
         # CASE 1: ADJACENT QUBITS ARE CHOSEN AS CONTROL AND TARGET
         if (control == target-1) or (target == control-1):
 
-            control_list = [0 if control == i else 1 for i in range(2)]
-            print control_list
-            identity_list = [0 if control_list[j] == 1 else 1 for j in range(2)]
-            print identity_list
+            #control_list = [0 if control == i else 1 for i in range(2)]
+            #print control_list
+            #identity_list = [0 if control_list[j] == 1 else 1 for j in range(2)]
+            #print identity_list
             # initialize empty 4 x 4 matrix for CNOT
             self.gate = np.zeros((4,4))
             for k in range(2):
                 if k == control:
                     # if control position is reached:
                     # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
-                    self.gate += np.kron(State2(1,control_list).state*State2(1,control_list).state.transpose(), unitary)
+                    self.gate += np.kron(State2(1,[0,1]).state*State2(1,[0,1]).state.transpose(), unitary)
                 else:
                     # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
-                    self.gate += np.kron(State2(1,identity_list).state*State2(1,identity_list).state.transpose(), Gate.eye)
+                    self.gate += np.kron(State2(1,[1,0]).state*State2(1,[1,0]).state.transpose(), Gate.eye)
+
+            if control > target:
+                self.gate = np.kron(Gate.H,Gate.H)*self.gate*np.kron(Gate.H,Gate.H)
             if num_qubits > 2:
-                self.gate = np.kron(self.gate, Gate.eye)
+                for k in range(num_qubits-2):
+                    self.gate = np.kron(self.gate, Gate.eye)
                 '''
                 order_list = [0]*(num_qubits-1)
                 marker = False
@@ -352,32 +356,43 @@ class ControlledGate:
                     self.gate = u_new
                     print self.gate
                 '''
-        # CASE 2:
+        # OTHER CASES:
+        else:
+
+            # initialize zero matrix
+            CNOT_initial = np.zeros((2**n,2**n))
+            for i in range(2**n-2):
+                CNOT_initial[i:i+2,i:i+2] = Gate.eye
+
+
 
 #SCRIPT
 
 # DO NOT CHANGE THE GLOBAL DEFINITION OF num_qubits!
 global num_qubits;
 # define the number of qubits for this simulation
-num_qubits = 3
+num_qubits = 4
 
 
-myState1 = State2(3,[1,0,0,0,0,0,0,0])
-newGate = Gate(Gate.X, 0)
-myState1.print_full_pretty()
-myState2 = State2.one_state
-print myState2
+myState1 = State2(4,[1])
+newGate = Gate(Gate.X, 1)
+#myState1.print_full_pretty()
+#myState2 = State2.one_state
+#print myState2
 #print myState1.state
 myState1.state = newGate.gate*myState1.state
-newGate = Gate(Gate.X, 1)
-myState1.state = newGate.gate*myState1.state
+#print myState1.state
+#newGate = Gate(Gate.X, 1)
+#print newGate.gate
+#myState1.state = newGate.gate*myState1.state
 
 #print type(myState1.state)
 myState1.print_full_pretty()
 #print np.matrix(myState1.state).transpose()
 #print myState1.state
 CX = ControlledGate(Gate.X,1,0)
+print CX.gate
 myState1.state = CX.gate*myState1.state
-#print CX.gate
+print CX.gate
 myState1.print_full_pretty()
 #myState1.project_on_blochsphere()
