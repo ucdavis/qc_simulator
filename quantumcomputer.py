@@ -2,7 +2,6 @@
 
 import numpy as np #for numerics
 import random # for random number generation
-from tabulate import tabulate # for nice printing
 from math import sqrt,pi,e # some common function
 import qutip as qp
 
@@ -12,12 +11,13 @@ import qutip as qp
 ####
     
 class State:
-# call with State(number_of_qubits, list_of_basisstatepositions_OR_amplitudes)
+# call with State(list_of_basisstatepositions)
+# or State(list_of_amplitudes)
+# needs global variable num_qubits
 
-    # ground state as default instance of a State 
-    def __init__(self, lis = [0]):
 
-        # if the list has less entries than amplitudes 2**n,
+    def __init__(self, lis = [0]): # Initialise a State object
+        # if the list has less entries than amplitudes (2**n),
         # interpret the entries as positions
         if len(lis) < 2**num_qubits:
             # check if all entries are valid positions
@@ -30,40 +30,75 @@ class State:
             # initialise state
             self.state = np.array([1./sqrt(len(lis)) if i in lis else 0 \
                                    for i in range(2**num_qubits)])
-        # else if the list has as many entries as amplitudes 2**n,
+        # else if the list has as many entries as amplitudes (2**n),
         # interpret the entries as amplitudes
         elif len(lis) == 2**num_qubits:
-            #TODO: check if normalised
             self.state = np.array(lis)
-            
+            if not self.is_normalised():
+                self.renormalise()
+                print 'Note thate the state you generated was normalised ' \
+                    'automatically '
         else:
             raise StandardError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid amplitudes or positions.')
+        
+    def renormalise(self): # Renormalise the amplitude vector to unit length
+        normalis_factor = float(np.sqrt(np.vdot(self.state,self.state)))
+        self.state = self.state/normalis_factor
+        return None
 
-                
-    def print_amplitudes(self):
-        np.set_printoptions(precision=3, suppress = True)
-        print self.state
+    def is_normalised(self): #Check if a state is normalised
+        if np.isclose(float(np.vdot(self.state,self.state)), float(1.0)):
+            return True
+        else:
+            return False
 
-    def print_basisstates(self):
+    def measure(self, runs = 1, output = 'outcomes'): #perform measurements on the state
+    # simulates a repeated generation and projective measurement of the state
+    # Options: 'outcomes' prints every result while 'stats' prints an overview
+        results = np.random.choice(len(self.state), runs, p=[abs(el)**2 for el in self.state])
+        if output == 'outcomes':
+            print "Measurement Results"
+            print "Index  Basis state "
+            print "-----   ----------- "
+            for el_res in results:
+                print "{0:04}".format(el_res),'   |', "".join(( "{0:0", \
+                                str(int(np.log2(len(self.state)))),"b}")).format(el_res),'>'
+        if output == 'stats':
+            #still to do
+            
+                 
+    def print_me(self, style = None): # print out current state.
+    # Options:
+    # None/empty - simple output of state information
+    # 'slim' - As in 'None' but without zero amplitude entries
+    # 'amplitudes' - only array of amplitudes
         np.set_printoptions(precision=3, suppress = True)
-        print self.state
-
-    def print_full(self):
-        np.set_printoptions(precision=3, suppress = True)
-        for i in range(len(self.state)):
-            basis_string = "".join(( "{0:0", str(int(np.log2(len(self.state)))),"b}"))
-            print round(self.state[i],2), "".join(('  |',basis_string.format(i) , '>' ))
-
-    def print_full_pretty(self):
-        np.set_printoptions(precision=3, suppress = True)
-        data = []
-        for i in range(len(self.state)):
-            basis_string = "".join(( "{0:0", str(int(np.log2(len(self.state)))),"b}"))
-            row = [ self.state[i],  "".join(('  |',basis_string.format(i) , '>' )) ]
-            data.append(row)
         print
-        print tabulate(data, headers=['Amplitude',' Basis state'] )
+        if style == None: # print all nonzero amplitudes
+            print "Index Probability Amplitude Basis state "
+            print "----- ----------- --------- ----------- "
+            for i in range(len(self.state)):
+                if not np.isclose(self.state[i],0.0):
+                    basis_string = "".join(( "{0:0", \
+                                str(int(np.log2(len(self.state)))),"b}"))
+                    print '', "{0:04}".format(i), '    ', \
+                        "{0:.3f}".format(abs(self.state[i])**2), '   ', \
+                        "{0:.3f}".format(self.state[i]), \
+                        "".join(('  |',basis_string.format(i) , '>' ))
+        if style == 'full': # print all amplitudes
+            print "Index Probability Amplitude Basis state "
+            print "----- ----------- --------- ----------- "
+            for i in range(len(self.state)):
+                    basis_string = "".join(( "{0:0", str(int(np.log2(len(self.state)))),"b}"))
+                    print '', "{0:04}".format(i), '    ', \
+                        "{0:.3f}".format(abs(self.state[i])**2), '   ', \
+                        "{0:.3f}".format(self.state[i]), \
+                        "".join(('  |',basis_string.format(i) , '>' ))
+            
+        if style == 'amplitudes':
+            print "Amplitudes: ", self.state
+
         print
 
 
@@ -108,18 +143,21 @@ class Gate:
     T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
     Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]])
     #TODO: CNOT
-# hallo
 
 
 #SCRIPT
 global num_qubits;
-num_qubits = 3
+num_qubits = 10
 
 
 
-newGate = Gate(Gate.X, 2)
-myState1 = State( [0,1])
-myState1.print_full()
+# Test Maria's printing
+num_qubits = 5
+myState1 = State( [1,2,20] )
+myState1.print_me()
+myState1.print_me('full')
+myState1.print_me('amplitudes')
+# Test Maria's measuring
+myState1.measure(50)
 
-#TESTMARIA
-#comment master
+
