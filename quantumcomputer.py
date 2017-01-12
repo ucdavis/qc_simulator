@@ -6,6 +6,19 @@ from math import sqrt,pi,e # some common function
 import qutip as qp # qutip library for Bloch sphere visualisations
 import cmath # library for complex numbers
 
+# define some elementary gates
+i_ = np.complex(0,1)
+H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
+X = np.matrix('0 1; 1 0')
+Y = np.matrix([[0, -i_],[i_, 0]])
+Z = np.matrix([[1,0],[0,-1]])
+eye = np.eye(2,2)
+S=np.matrix([[1,0],[0,i_]])
+Sdagger=np.matrix([[1,0],[0,-i_]])
+T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
+Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]])
+#def Rx(angle) = np.array([[angle],[]])
+
 ## States
 ####
 
@@ -141,10 +154,14 @@ class State:
             #print "beta_new:", beta_new
 
             if abs(alpha) == 0 or abs(beta) == 0:
-        	    if alpha == 0:
-        		    bloch.clear()
+                if alpha == 0:
+                    bloch.clear()
                     down = [0,0,-1]
                     bloch.add_vectors(down)
+                else:
+                    bloch.clear()
+                    up = [0,0,1]
+                    bloch_add
                 #else:
                     #bloch.clear()
                 #else:
@@ -179,11 +196,7 @@ class State:
 ####
 ## Gates
 ####
-
-class Gate:
-
-    # identity as default instance of a Gate
-    def __init__(self, unitary, qubit_pos = -1):
+def Gate(unitary, qubit_pos = -1):
 
         # check if input matrix is unitary
         if np.allclose(np.linalg.inv(unitary),unitary.conjugate().transpose()) == False:
@@ -195,7 +208,7 @@ class Gate:
             if cmp(unitary.shape, (2**num_qubits,2**num_qubits)) != 0:
                 raise StandardError('Cannot create new Gate().'\
                    'Input matrix must be 2^n x 2^n.')
-            self.gate = np.array(unitary)
+            gate = np.array(unitary)
 
         # if gate is applied to a single qubit check if matrix has dimension 2x2
         if 0 <= qubit_pos < num_qubits:
@@ -210,21 +223,11 @@ class Gate:
             u_new = unitary_list[0]
             for k in range(num_qubits-1):
                  u_new = np.kron(u_new, unitary_list[k+1])
-            self.gate = u_new
+            gate = u_new
+            return gate
 
 
-    # define some elementary gates
-    i_ = np.complex(0,1)
-    H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
-    X = np.matrix('0 1; 1 0')
-    Y = np.matrix([[0, -i_],[i_, 0]])
-    Z = np.matrix([[1,0],[0,-1]])
-    eye = np.eye(2,2)
-    S=np.matrix([[1,0],[0,i_]])
-    Sdagger=np.matrix([[1,0],[0,-i_]])
-    T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
-    Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]])
-    Rx(x) = np.array([angle])
+
 
     #TODO: CNOT
 class ControlledGate:
@@ -287,6 +290,7 @@ num_qubits = 10
 
 # Test Maria's printing
 num_qubits = 5
+testgate = Gate(X,0)
 myState1 = State( [1,2,20] )
 myState1.print_me()
 myState1.print_me('full')
