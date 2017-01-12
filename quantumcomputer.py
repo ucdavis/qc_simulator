@@ -28,13 +28,13 @@ class State:
                 raise StandardError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid positions.')
             # initialise state
-            self.state = np.matrix([1./sqrt(len(lis)) if i in lis else 0 \
+            self.state = np.array([1./sqrt(len(lis)) if i in lis else 0 \
                                    for i in range(2**num_qubits)])
         # else if the list has as many entries as amplitudes 2**n,
         # interpret the entries as amplitudes
         elif len(lis) == 2**num_qubits:
             #TODO: check if normalised
-            self.state = np.matrix(lis)
+            self.state = np.array(lis)
 
         else:
             raise StandardError('Cannot interpret input of State() creator.'\
@@ -66,75 +66,78 @@ class State:
         print
 
     def project_on_blochsphere(self):
-        alpha = self.state[0]
-        beta = self.state[1]
-        bloch = qp.Bloch() # initialise Bloch sphere
-        # Define the x,y and z axes for the Bloch sphere
-        x_basis = (qp.basis(2,0)+(1+0j)*qp.basis(2,1)).unit()
-        y_basis = (qp.basis(2,0)+(0+1j)*qp.basis(2,1)).unit()
-        z_basis = (qp.basis(2,0)+(0+0j)*qp.basis(2,1)).unit()
-        bloch.add_states([x_basis,y_basis,z_basis]) # add the axes to the Bloch sphere
-        bloch.vector_color = ['k','k','k','k','g'] # Bloch vector colours
-        bloch.vector_width = 3 # define Bloch vector width
-        onestate = [[0.,0.,-1.]] # define |1> state vector
-        bloch.add_vectors(onestate) # add |1> state vector
+        if num_qubits == 1:
+            alpha = self.state[0]
+            beta = self.state[1]
+            bloch = qp.Bloch() # initialise Bloch sphere
+            # Define the x,y and z axes for the Bloch sphere
+            x_basis = (qp.basis(2,0)+(1+0j)*qp.basis(2,1)).unit()
+            y_basis = (qp.basis(2,0)+(0+1j)*qp.basis(2,1)).unit()
+            z_basis = (qp.basis(2,0)+(0+0j)*qp.basis(2,1)).unit()
+            bloch.add_states([x_basis,y_basis,z_basis]) # add the axes to the Bloch sphere
+            bloch.vector_color = ['k','k','k','k','g'] # Bloch vector colours
+            bloch.vector_width = 3 # define Bloch vector width
+            onestate = [[0.,0.,-1.]] # define |1> state vector
+            bloch.add_vectors(onestate) # add |1> state vector
 
-        # Find and eliminate global phase
-        angle_alpha = cmath.phase(alpha)
-        #print "angle_alpha:", angle_alpha
-        angle_beta = cmath.phase(beta)
-        #print "angle_beta:", angle_beta
+            # Find and eliminate global phase
+            angle_alpha = cmath.phase(alpha)
+            #print "angle_alpha:", angle_alpha
+            angle_beta = cmath.phase(beta)
+            #print "angle_beta:", angle_beta
 
-        if angle_beta < 0:
-        	if angle_alpha < angle_beta:
-        		alpha_new = alpha/cmath.exp(1j*angle_beta)
-        		beta_new = beta/cmath.exp(1j*angle_beta)
-        	else:
-        		alpha_new = alpha/cmath.exp(1j*angle_alpha)
-                	beta_new = beta/cmath.exp(1j*angle_alpha)
-        else:
-        	if angle_alpha > angle_beta:
-                        alpha_new = alpha/cmath.exp(1j*angle_beta)
-                        beta_new = beta/cmath.exp(1j*angle_beta)
+            if angle_beta < 0:
+        	    if angle_alpha < angle_beta:
+        		    alpha_new = alpha/cmath.exp(1j*angle_beta)
+        		    beta_new = beta/cmath.exp(1j*angle_beta)
+        	    else:
+        		    alpha_new = alpha/cmath.exp(1j*angle_alpha)
+                    beta_new = beta/cmath.exp(1j*angle_alpha)
+            else:
+                if angle_alpha > angle_beta:
+                    alpha_new = alpha/cmath.exp(1j*angle_beta)
+                    beta_new = beta/cmath.exp(1j*angle_beta)
+                    #alpha_new = alpha/cmath.exp(1j*angle_beta)
+                    #beta_new = beta/cmath.exp(1j*angle_beta)
                 else:
-                        alpha_new = alpha/cmath.exp(1j*angle_alpha)
-                        beta_new = beta/cmath.exp(1j*angle_alpha)
-        #print "alpha_new:", alpha_new
-        #print "beta_new:", beta_new
+                    alpha_new = alpha/cmath.exp(1j*angle_alpha)
+                    beta_new = beta/cmath.exp(1j*angle_alpha)
+            #print "alpha_new:", alpha_new
+            #print "beta_new:", beta_new
 
-        if abs(alpha) == 0 or abs(beta) == 0:
-        	if alpha == 0:
-        		bloch.clear()
-        		down = [0,0,-1]
-        		bloch.add_vectors(down)
-        	else:
-        		bloch.clear()
-        		up = [0,0,1]
-        		bloch.add_vectors(up)
-        else:
-        	# Compute theta and phi from alpha and beta
-        	theta = 2*cmath.acos(alpha_new)
-        	phi = -1j*cmath.log(beta_new/cmath.sin(theta/2))
-        	#print "theta:", theta
-        	#print "phi:", phi
+            if abs(alpha) == 0 or abs(beta) == 0:
+        	    if alpha == 0:
+        		    bloch.clear()
+                    down = [0,0,-1]
+                    bloch.add_vectors(down)
+                else:
+                    bloch.clear()
+                    up = [0,0,1]
+                    bloch.add_vectors(up)
+            else:
+        	    # Compute theta and phi from alpha and beta
+        	    theta = 2*cmath.acos(alpha_new)
+        	    phi = -1j*cmath.log(beta_new/cmath.sin(theta/2))
+        	    #print "theta:", theta
+        	    #print "phi:", phi
 
-        	# Compute the cartesian coordinates
-        	x = cmath.sin(theta)*cmath.cos(phi)
-        	y = cmath.sin(theta)*cmath.sin(phi)
-        	z = cmath.cos(theta)
-        	#print "x:", x
-        	#print "y:", y
-        	#print "z:", z
+        	    # Compute the cartesian coordinates
+        	    x = cmath.sin(theta)*cmath.cos(phi)
+        	    y = cmath.sin(theta)*cmath.sin(phi)
+        	    z = cmath.cos(theta)
+        	    #print "x:", x
+        	    #print "y:", y
+        	    #print "z:", z
 
-        	# Create the new state vector and plot it onto the Bloch sphere
-        	new_vec = [x.real,y.real,z.real]
-        	bloch.add_vectors(new_vec)
+        	    # Create the new state vector and plot it onto the Bloch sphere
+        	    new_vec = [x.real,y.real,z.real]
+                bloch.add_vectors(new_vec)
 
-        bloch.show()
+            bloch.show()
 
-    zero_state = np.matrix('1; 0')
-    one_state = np.matrix('0; 1')
-
+    #zero_state = np.array('1; 0')
+    #one_state = np.array('0; 1')
+'''
 ####
 ## States2
 ####
@@ -262,7 +265,7 @@ class State2:
 
     zero_state = np.matrix('1; 0')
     one_state = np.matrix('0; 1')
-
+'''
 ####
 ## Gates
 ####
@@ -270,7 +273,7 @@ class State2:
 class Gate:
 
     # identity as default instance of a Gate
-    def __init__(self, unitary, qubit_pos = -1):
+    def __init__(self, unitary, opt angle, qubit_pos = -1):
 
         # check if input matrix is unitary
         if np.allclose(np.linalg.inv(unitary),unitary.conjugate().transpose()) == False:
@@ -282,7 +285,7 @@ class Gate:
             if cmp(unitary.shape, (2**num_qubits,2**num_qubits)) != 0:
                 raise StandardError('Cannot create new Gate().'\
                    'Input matrix must be 2^n x 2^n.')
-            self.gate = np.mat(unitary)
+            self.gate = np.array(unitary)
 
         # if gate is applied to a single qubit check if matrix has dimension 2x2
         if 0 <= qubit_pos < num_qubits:
@@ -301,7 +304,7 @@ class Gate:
 
     # define some elementary gates
     i_ = np.complex(0,1)
-    H = 1./sqrt(2)*np.matrix('1 1; 1 -1')
+    H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
     X = np.matrix('0 1; 1 0')
     Y = np.matrix([[0, -i_],[i_, 0]])
     Z = np.matrix([[1,0],[0,-1]])
@@ -310,6 +313,7 @@ class Gate:
     Sdagger=np.matrix([[1,0],[0,-i_]])
     T=np.matrix([[1,0],[0, e**(i_*pi/4.)]])
     Tdagger=np.matrix([[1,0],[0, e**(-i_*pi/4.)]])
+    Rx(x) = np.array([angle])
 
     #TODO: CNOT
 class ControlledGate:
@@ -371,16 +375,23 @@ class ControlledGate:
 # DO NOT CHANGE THE GLOBAL DEFINITION OF num_qubits!
 global num_qubits;
 # define the number of qubits for this simulation
-num_qubits = 4
+num_qubits = 1
 
 
-myState1 = State2(4,[1])
-newGate = Gate(Gate.X, 1)
+myState1 = State([0])
+myState1.print_full_pretty()
+newGate = Gate(Gate.X, 0)
+Gate(Gate.Rx(pi/2),0)
+newGate2 = Gate(Gate.H, 0)
 #myState1.print_full_pretty()
 #myState2 = State2.one_state
-#print myState2
+print myState1.state
 #print myState1.state
-myState1.state = newGate.gate*myState1.state
+#myState1 = myState1.apply_gate(newGate)
+print newGate2.gate
+myState1.state = np.dot(newGate2.gate,myState1.state)
+#print myState1.state
+#myState1.state = newGate.gate*myState1.state
 #print myState1.state
 #newGate = Gate(Gate.X, 1)
 #print newGate.gate
@@ -391,8 +402,9 @@ myState1.print_full_pretty()
 #print np.matrix(myState1.state).transpose()
 #print myState1.state
 CX = ControlledGate(Gate.X,1,0)
-print CX.gate
-myState1.state = CX.gate*myState1.state
-print CX.gate
-myState1.print_full_pretty()
-#myState1.project_on_blochsphere()
+print type(CX.gate)
+#print CX.gate
+#myState1.state = np.dot(myState1.state,CX.gate)
+#print CX.gate
+#myState1.print_full_pretty()
+myState1.project_on_blochsphere()
