@@ -110,10 +110,12 @@ class State:
         		    bloch.clear()
                     down = [0,0,-1]
                     bloch.add_vectors(down)
-                else:
-                    bloch.clear()
-                    up = [0,0,1]
-                    bloch.add_vectors(up)
+                #else:
+                    #bloch.clear()
+                #else:
+                #    bloch.clear()
+                #    up = [0,0,1]
+                #    bloch.add_vectors(up)
             else:
         	    # Compute theta and phi from alpha and beta
         	    theta = 2*cmath.acos(alpha_new)
