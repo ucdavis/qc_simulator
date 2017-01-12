@@ -9,7 +9,7 @@ import qutip as qp
 ####
 ## States
 ####
-    
+
 class State:
 # call with State(list_of_basisstatepositions)
 # or State(list_of_amplitudes)
@@ -41,7 +41,7 @@ class State:
         else:
             raise StandardError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid amplitudes or positions.')
-        
+
     def renormalise(self): # Renormalise the amplitude vector to unit length
         normalis_factor = float(np.sqrt(np.vdot(self.state,self.state)))
         self.state = self.state/normalis_factor
@@ -64,10 +64,10 @@ class State:
             for el_res in results:
                 print "{0:04}".format(el_res),'   |', "".join(( "{0:0", \
                                 str(int(np.log2(len(self.state)))),"b}")).format(el_res),'>'
-        if output == 'stats':
+        #if output == 'stats':
             #still to do
-            
-                 
+
+
     def print_me(self, style = None): # print out current state.
     # Options:
     # None/empty - simple output of state information
@@ -95,7 +95,7 @@ class State:
                         "{0:.3f}".format(abs(self.state[i])**2), '   ', \
                         "{0:.3f}".format(self.state[i]), \
                         "".join(('  |',basis_string.format(i) , '>' ))
-            
+
         if style == 'amplitudes':
             print "Amplitudes: ", self.state
 
@@ -108,7 +108,7 @@ class State:
 
 class Gate:
 
-    # identity as default instance of a Gate 
+    # identity as default instance of a Gate
     def __init__(self, unitary, qubit_pos = -1):
         #if not is_unitary(unitary):
         #    raise StandardError('Cannot create new Gate().'\
@@ -129,8 +129,8 @@ class Gate:
             for k in range(num_qubits-2):
                  u_new = np.kron(u_new, unitary_list[k+2])
             self.gate = u_new
-                
-    
+
+
     # define elementary gates
     i_ = np.complex(0,1)
     H = 1./sqrt(2)*np.matrix('1 1; 1 -1')
@@ -159,5 +159,3 @@ myState1.print_me('full')
 myState1.print_me('amplitudes')
 # Test Maria's measuring
 myState1.measure(50)
-
-
