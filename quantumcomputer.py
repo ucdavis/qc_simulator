@@ -320,10 +320,12 @@ class ControlledGate:
         if (control == target-1) or (target == control-1):
 
             control_list = [0 if control == i else 1 for i in range(2)]
+            print control_list
             identity_list = [0 if control_list[j] == 1 else 1 for j in range(2)]
+            print identity_list
             # initialize empty 4 x 4 matrix for CNOT
             self.gate = np.zeros((4,4))
-            for k in range(num_qubits):
+            for k in range(2):
                 if k == control:
                     # if control position is reached:
                     # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
@@ -332,22 +334,24 @@ class ControlledGate:
                     # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
                     self.gate += np.kron(State2(1,identity_list).state*State2(1,identity_list).state.transpose(), Gate.eye)
             if num_qubits > 2:
+                self.gate = np.kron(self.gate, Gate.eye)
+                '''
                 order_list = [0]*(num_qubits-1)
                 marker = False
                 for i in range(num_qubits-1):
-                    if (control == i) or (target == i) and (marker == False):
+                    if ((control == i) or (target == i)) and (marker == False):
                         order_list[i] = self.gate
                         marker = True
                     else:
                         order_list[i] = Gate.eye
-
-                #print order_list[1]
+                        #print "test", order_list[i]
                         #order_list = [self.gate; i += 1; if (control == i) or (target == i) else Gate.eye for i in range(num_qubits)]
                 u_new = order_list[0]
                 for k in range(num_qubits-2):
                     u_new = np.kron(u_new, order_list[k+1])
                     self.gate = u_new
                     print self.gate
+                '''
         # CASE 2:
 
 #SCRIPT
@@ -372,7 +376,7 @@ myState1.state = newGate.gate*myState1.state
 myState1.print_full_pretty()
 #print np.matrix(myState1.state).transpose()
 #print myState1.state
-CX = ControlledGate(Gate.X,0,1)
+CX = ControlledGate(Gate.X,1,0)
 myState1.state = CX.gate*myState1.state
 #print CX.gate
 myState1.print_full_pretty()
