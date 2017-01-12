@@ -167,7 +167,7 @@ class State:
         	    #print "z:", z
 
         	    # Create the new state vector and plot it onto the Bloch sphere
-        	    new_vec = [x.real,y.real,z.real]
+                new_vec = [x.real,y.real,z.real]
                 bloch.add_vectors(new_vec)
 
             bloch.show()
