@@ -101,15 +101,17 @@ def project_on_blochsphere(state):
         alpha = state[0]
         beta = state[1]
         bloch = qp.Bloch() # initialise Bloch sphere
+
         # Define the x,y and z axes for the Bloch sphere
         #x_basis = (qp.basis(2,0)+(1+0j)*qp.basis(2,1)).unit()
         #y_basis = (qp.basis(2,0)+(0+1j)*qp.basis(2,1)).unit()
         #z_basis = (qp.basis(2,0)+(0+0j)*qp.basis(2,1)).unit()
         #bloch.add_states([x_basis,y_basis,z_basis]) # add the axes to the Bloch sphere
-        bloch.vector_color = ['g'] # Bloch vector colour
-        bloch.vector_width = 3 # define Bloch vector width
         #onestate = [[0.,0.,-1.]] # define |1> state vector
         #bloch.add_vectors(onestate) # add |1> state vector
+
+        bloch.vector_color = ['g'] # Bloch vector colour
+        bloch.vector_width = 3 # define Bloch vector width
 
         # Find and eliminate global phase
         angle_alpha = cmath.phase(alpha)
@@ -156,8 +158,7 @@ def project_on_blochsphere(state):
         bloch.show()
     else:
         raise StandardError('Bloch projection is only supported'\
-                                'for single qubit states.')
-
+                                ' for single qubit states.')
 
 #################### Gate functions
 
@@ -174,10 +175,9 @@ T=np.array([[1,0],[0, e**(i_*pi/4.)]])
 Tdagger=np.array([[1,0],[0, e**(-i_*pi/4.)]])
 
 def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
+    num_qubits = int(math.log(len(quantum_state),2))
 
     if (len(qubit_pos) == 1):
-
-        num_qubits = int(math.log(len(quantum_state),2))
 
         print (qubit_pos[0] > num_qubits)
         if (qubit_pos[0] < 0) or (qubit_pos[0] > num_qubits) :
@@ -202,7 +202,36 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
             return quantum_state
 
     elif (len(qubit_pos) == 2):
-        test
+
+        control = qubit_pos[0]
+        target = qubit_pos[1]
+        # CASE 1: ADJACENT QUBITS ARE CHOSEN AS CONTROL AND TARGET
+        if (control == target-1) or (target == control-1):
+
+            #control_list = [0 if control == i else 1 for i in range(2)]
+            #print control_list
+            #identity_list = [0 if control_list[j] == 1 else 1 for j in range(2)]
+            #print identity_list
+
+            # initialize empty 4 x 4 matrix for controlled gate
+            cgate = np.zeros((4,4))
+            for k in range(2):
+                if k == control:
+                    # if control position is reached:
+                    # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
+                    cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
+                else:
+                    # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
+                    cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
+            cgate = np.array(cgate)
+            if control > target:
+                cgate = np.kron(H,H)*cgate*np.kron(H,H)
+            if num_qubits > 2:
+                for k in range(num_qubits-2):
+                    cgate = np.kron(cgate, eye)
+
+            quantum_state = np.dot(cgate,quantum_state)
+            return quantum_state
 
     else:
         raise StandardError('Too many qubits specified.'\
@@ -213,9 +242,10 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
 
 #################### Execution
 
-state = create_state(1,[0.5, 0.5])
+state = create_state(2,[2])
 print_me(state, 'full')
-state = apply_total_unitary(X, [0], state)
+#print np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1]))
+state = apply_total_unitary(X, [0,1], state)
 print_me(state, 'full')
-project_on_blochsphere(state)
+#project_on_blochsphere(state)
 measure(state, 4)
