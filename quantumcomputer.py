@@ -223,11 +223,8 @@ def Gate(unitary, qubit_pos = -1):
             u_new = unitary_list[0]
             for k in range(num_qubits-1):
                  u_new = np.kron(u_new, unitary_list[k+1])
-            gate = u_new
+         gate = u_new
             return gate
-
-
-
 
     #TODO: CNOT
 class ControlledGate:
