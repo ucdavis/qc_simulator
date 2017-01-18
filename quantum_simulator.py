@@ -204,12 +204,9 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
 
         control = qubit_pos[0]
         target = qubit_pos[1]
+
         # CASE 1: ADJACENT QUBITS ARE CHOSEN AS CONTROL AND TARGET
         if (control == target-1) or (target == control-1):
-            #control_list = [0 if control == i else 1 for i in range(2)]
-            #print control_list
-            #identity_list = [0 if control_list[j] == 1 else 1 for j in range(2)]
-            #print identity_list
 
             # initialize empty 4 x 4 matrix for controlled gate
             cgate = np.zeros((4,4))
@@ -235,7 +232,12 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
             quantum_state = np.dot(cgate,quantum_state)
             return quantum_state
 
-            # try out solving the 4-qubit case
+        else:
+            cgate = create_controlledGate(gate_matrix, qubit_pos, len(quantum_state), num_qubits)
+            quantum_state = np.dot(cgate,quantum_state)
+
+            return quantum_state
+        '''
         if ((control-target) == -(num_qubits-1)):
             cgate = np.eye(len(quantum_state),len(quantum_state))
 
@@ -267,52 +269,70 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
             quantum_state = np.dot(cgate,quantum_state)
 
             return quantum_state
-
-        #if (abs(control-target) == num_qubits-1):
-        #    cgate = np.eye(len(quantum_state),len(quantum_state))
-        #    for m in [16,18,20,22,24,26,28,30]: #len(quantum_state)/2 iteratively added 2 until len(quantum_state)-2
-        #        print np.array([m,m+1])
-        #        cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
-        #    quantum_state = np.dot(cgate,quantum_state)
-
-        #    return quantum_state
-
-            #CNOT5_04=np.eye(32,32)
-    		#CNOT5_04[np.array([16,17])]=CNOT5_04[np.array([17,16])]
-    		#CNOT5_04[np.array([18,19])]=CNOT5_04[np.array([19,18])]
-    		#CNOT5_04[np.array([20,21])]=CNOT5_04[np.array([21,20])]
-    		#CNOT5_04[np.array([22,23])]=CNOT5_04[np.array([23,22])]
-    		#CNOT5_04[np.array([24,25])]=CNOT5_04[np.array([25,24])]
-    		#CNOT5_04[np.array([26,27])]=CNOT5_04[np.array([27,26])]
-    		#CNOT5_04[np.array([28,29])]=CNOT5_04[np.array([29,28])]
-    		#CNOT5_04[np.array([30,31])]=CNOT5_04[np.array([31,30])]
-    		#CNOT4_30[np.array([1,9])]=CNOT4_30[np.array([9,1])]
-    		#CNOT4_30[np.array([3,11])]=CNOT4_30[np.array([11,3])]
-    		#CNOT4_30[np.array([5,13])]=CNOT4_30[np.array([13,5])]
-    		#CNOT4_30[np.array([7,15])]=CNOT4_30[np.array([15,7])]
-            #CNOT4_03[np.array([8,9])]=CNOT4_03[np.array([9,8])]
-    		#CNOT4_03[np.array([10,11])]=CNOT4_03[np.array([11,10])]
-    		#CNOT4_03[np.array([12,13])]=CNOT4_03[np.array([13,12])]
-    		#CNOT4_03[np.array([14,15])]=CNOT4_03[np.array([15,14])]
-    		#CNOT4_30=np.eye(16,16)
-    		#CNOT4_30[np.array([1,9])]=CNOT4_30[np.array([9,1])]
-    		#CNOT4_30[np.array([3,11])]=CNOT4_30[np.array([11,3])]
-    		#CNOT4_30[np.array([5,13])]=CNOT4_30[np.array([13,5])]
-    		#CNOT4_30[np.array([7,15])]=CNOT4_30[np.array([15,7])]
-
+            '''
     else:
         raise StandardError('Too many qubits specified.'\
                                 ' Please enter a maximum of 2 valid positions.')
 
     return None
 
+def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
+    control = qubit_pos[0]
+    target = qubit_pos[1]
+
+    if ((control-target) == -(num_qubits-1)):
+        cgate = np.eye(num_amplitudes,num_amplitudes)
+
+        iteration_list = np.array(num_amplitudes/2)
+        value_save = num_amplitudes/2
+        for k in range(num_amplitudes/4-1):
+            iteration_list = np.append(iteration_list,value_save+2)
+            value_save = value_save+2
+
+        for m in iteration_list:
+            print np.array([m,m+1])
+            cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
+
+        return cgate
+
+    elif ((control-target) == num_qubits-1):
+        cgate = np.eye(num_amplitudes,num_amplitudes)
+
+        iteration_list = np.array(1)
+        value_save = 1
+        for k in range(num_amplitudes/4-1):
+            iteration_list = np.append(iteration_list,value_save+2)
+            value_save = value_save+2
+
+        for m in iteration_list:
+            cgate[np.array([m,m+num_amplitudes/2])]=cgate[np.array([m+num_amplitudes/2,m])]
+
+        return cgate
+
+    elif (control <= num_qubits-2) and (target <= num_qubits-2):
+        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
+        cgate = np.kron(pre_cgate,eye)
+
+        return cgate
+
+    elif (control == num_qubits-1) or (target == num_qubits-2):
+        pre_cgate = create_controlledGate(gate_matrix, [qubit_pos[0]-1, qubit_pos[1]-1], num_amplitudes/2, num_qubits-1)
+        cgate = np.kron(eye,pre_cgate)
+
+        return cgate
+
+    else:
+        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
+        cgate = np.kron(pre_cgate,eye)
+
+        return cgate
 
 #################### Execution
 
-state = create_state(5,[11])
+state = create_state(7,[47])
 print_me(state, 'full')
 #print np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1]))
-state = apply_total_unitary(X, [3,0], state)
+state = apply_total_unitary(X, [5,3], state)
 print_me(state, 'full')
 #project_on_blochsphere(state)
 measure(state, 4)
