@@ -331,8 +331,21 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
 state = create_state(7,[47])
 print_me(state, 'full')
-#print np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1]))
 state = apply_total_unitary(X, [5,3], state)
 print_me(state, 'full')
 #project_on_blochsphere(state)
 measure(state, 4)
+'''
+# SWAP TEST with psi = |0> and phi = |1>
+state = create_state(3,[0])
+# first qubit is used as ancilla
+state = apply_total_unitary(H,[0],state)
+# flip the third qubit to test if swap test works
+state = apply_total_unitary(X,[2],state)
+state = apply_total_unitary(X,[0,1],state)
+state = apply_total_unitary(X,[0,2],state)
+state = apply_total_unitary(H, [0], state)
+measure(state,100)
+# NEED POSSIBILITY TO MEASURE SINGLE QUBITS ONLY
+# >> TO EASE CONDITIONAL MEASUREMENTS
+'''
