@@ -212,7 +212,6 @@ class Gate:
                  u_new = np.kron(u_new, unitary_list[k+1])
             self.gate = u_new
 
-
     # define some elementary gates
     i_ = np.complex(0,1)
     H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
