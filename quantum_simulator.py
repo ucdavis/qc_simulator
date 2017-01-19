@@ -174,18 +174,37 @@ Sdagger=np.array([[1,0],[0,-i_]])
 T=np.array([[1,0],[0, e**(i_*pi/4.)]])
 Tdagger=np.array([[1,0],[0, e**(-i_*pi/4.)]])
 
+def Rx(angle):
+    return np.array([[cmath.cos(angle/2),-i_*cmath.sin(angle/2)],[-i_*cmath.sin(angle/2), cmath.cos(angle/2)]])
+
+def Ry(angle):
+    return np.array([[cmath.cos(angle/2),-cmath.sin(angle/2)],[cmath.sin(angle/2),cmath.cos(angle/2)]])
+
+def Rz(angle):
+    return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
+
+
 def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
     num_qubits = int(math.log(len(quantum_state),2))
 
+    # check if input matrix is a 2x2 matrix
+    if cmp(gate_matrix.shape, (2,2)) != 0:
+        raise StandardError('Cannot create total unitary. '\
+                        'Input matrix must be 2x2.')
+
+    # check if input matrix is unitary
+    if np.allclose(np.linalg.inv(gate_matrix),gate_matrix.conjugate().transpose()) == False:
+        raise StandardError('Cannot create total unitary.'\
+                            ' Input matrix must be unitary.')
+
     if (len(qubit_pos) == 1):
-        print (qubit_pos[0] > num_qubits)
+
+        # check if qubit positions are valid
         if (qubit_pos[0] < 0) or (qubit_pos[0] > num_qubits) :
             raise StandardError('Your selected qubit position is out of range.'\
                             ' Please choose a valid qubit position.')
         else:
-            if cmp(gate_matrix.shape, (2,2)) != 0:
-                raise StandardError('Cannot create new Gate(). '\
-                                'Input matrix must be 2x2.')
+            # create a list of gates representing the required tensor product
             unitary_list = [gate_matrix if qubit_pos[0] == i else np.eye(2,2) for i in range(num_qubits)]
 
             # calculate the Kronecker tensor product with (n-1) identity matrices
@@ -202,74 +221,110 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
 
     elif (len(qubit_pos) == 2):
 
+        # isolate control and target qubits
         control = qubit_pos[0]
         target = qubit_pos[1]
 
+        if control==target:
+            raise StandardError('Target and control are the same. '\
+                                'Please choose different target and '\
+                                'control qubits.')
+
         # CASE 1: ADJACENT QUBITS ARE CHOSEN AS CONTROL AND TARGET
         if (control == target-1) or (target == control-1):
+            checker = False
+            if (target == control-1):
+                checker = True
+                save_control = control
+                control = target
+                target = save_control
 
             # initialize empty 4 x 4 matrix for controlled gate
             cgate = np.zeros((4,4))
-            for k in range(2):
-                if k == control:
+            #for k in range(num_qubits):
+            #    if k == control:
                     # if control position is reached:
                     # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
-                    cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
-                else:
+            cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
+                #else:
                     # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
-                    cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
+            cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
+            # convert to array
             cgate = np.array(cgate)
-            if control > target:
-                cgate = np.kron(H,H)*cgate*np.kron(H,H)
-            if num_qubits > 2:
-                for k in range(num_qubits-2):
-                    print k
-                    if (control == k) or (control < k):
-                        cgate = np.kron(cgate, eye)
-                    else:
-                        cgate = np.kron(eye,cgate)
 
+            if num_qubits > 2:
+                # perform the tensor products with identity matrices
+                for k in range(num_qubits):
+                    #print all([(k>control),(k>target)])
+                    # pre-multiply identities
+                    if all([(k<control),(k<target)]):
+                        print "pre-multiply"
+                        cgate = np.kron(eye,cgate)
+                    # post-multiply identities
+                    elif all([(k>control),(k>target)]):
+                        print "post-multiply"
+                        cgate = np.kron(cgate, eye)
+
+                if checker:
+                    save_control = control
+                    control = target
+                    target = save_control
+                # use the Hadamard trick to reverse the direction of the CNOT gate
+                if control > target:
+                    quantum_state = apply_total_unitary(H,[control],quantum_state)
+                    quantum_state = apply_total_unitary(H,[target],quantum_state)
+                    quantum_state = np.dot(cgate,quantum_state)
+                    quantum_state = apply_total_unitary(H,[control],quantum_state)
+                    quantum_state = apply_total_unitary(H,[target],quantum_state)
+
+                    return quantum_state
+
+            # apply the 2**n x 2**n matrix to the quantum state
             quantum_state = np.dot(cgate,quantum_state)
+
             return quantum_state
 
         else:
+            # obtain the respective gate matrix with the
+            # create_controlledGate function
             cgate = create_controlledGate(gate_matrix, qubit_pos, len(quantum_state), num_qubits)
-            quantum_state = np.dot(cgate,quantum_state)
 
-            return quantum_state
-        '''
-        if ((control-target) == -(num_qubits-1)):
-            cgate = np.eye(len(quantum_state),len(quantum_state))
-
-            iteration_list = np.array(len(quantum_state)/2)
-            value_save = len(quantum_state)/2
-            for k in range(len(quantum_state)/4-1):
-                iteration_list = np.append(iteration_list,value_save+2)
-                value_save = value_save+2
-
-            for m in iteration_list:
-                print np.array([m,m+1])
-                cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
+            # apply the 2**n x 2**n matrix to the quantum state
             quantum_state = np.dot(cgate,quantum_state)
 
             return quantum_state
 
-        if ((control-target) == num_qubits-1):
-            cgate = np.eye(len(quantum_state),len(quantum_state))
+    # Controlled controlled case: currently only allows for Toffoli
+    elif (len(qubit_pos) == 3):
 
-            iteration_list = np.array(1)
-            value_save = 1
-            for k in range(len(quantum_state)/4-1):
-                iteration_list = np.append(iteration_list,value_save+2)
-                value_save = value_save+2
-            print iteration_list
+        control1 = qubit_pos[0]
+        control2 = qubit_pos[1]
+        target = qubit_pos[2]
 
-            for m in iteration_list:
-                cgate[np.array([m,m+len(quantum_state)/2])]=cgate[np.array([m+len(quantum_state)/2,m])]
-            quantum_state = np.dot(cgate,quantum_state)
+        # check if input gate is X > only Toffoli allowed for now
+        if (gate_matrix==X).all() == False:
+            raise StandardError('Cannot create the controlled controlled U gate. '\
+                                'Only Toffoli supported so far. '\
+                                'Input matrix must be the X gate.')
 
-            return quantum_state
-            '''
+        quantum_state = apply_total_unitary(H,[target],quantum_state)
+        quantum_state = apply_total_unitary(X,[control1,target],quantum_state)
+        quantum_state = apply_total_unitary(Tdagger,[target],quantum_state)
+        quantum_state = apply_total_unitary(X,[control2,target],quantum_state)
+        quantum_state = apply_total_unitary(T,[target],quantum_state)
+        quantum_state = apply_total_unitary(X,[control1,target],quantum_state)
+        quantum_state = apply_total_unitary(Tdagger,[target],quantum_state)
+        quantum_state = apply_total_unitary(X,[control2,target],quantum_state)
+        quantum_state = apply_total_unitary(T,[target],quantum_state)
+        quantum_state = apply_total_unitary(T,[control1],quantum_state)
+        quantum_state = apply_total_unitary(X,[control2,control1],quantum_state)
+        quantum_state = apply_total_unitary(H,[target],quantum_state)
+        quantum_state = apply_total_unitary(T,[control2],quantum_state)
+        quantum_state = apply_total_unitary(Tdagger,[control1],quantum_state)
+        quantum_state = apply_total_unitary(X,[control2,control1],quantum_state)
+
+        return quantum_state
+
     else:
         raise StandardError('Too many qubits specified.'\
                                 ' Please enter a maximum of 2 valid positions.')
@@ -290,7 +345,7 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
             value_save = value_save+2
 
         for m in iteration_list:
-            print np.array([m,m+1])
+            #print np.array([m,m+1])
             cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
 
         return cgate
@@ -322,6 +377,8 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
         return cgate
 
     else:
+        #print "I am here"
+        qubit_pos = [ x-1 for x in qubit_pos]
         pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
         cgate = np.kron(pre_cgate,eye)
 
@@ -329,12 +386,24 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
 #################### Execution
 
-state = create_state(7,[47])
-print_me(state, 'full')
-state = apply_total_unitary(X, [5,3], state)
-print_me(state, 'full')
+quantum_state = create_state(4,[15])
+print_me(quantum_state, 'full')
+control1 = 2
+control2 = 1
+target = 3
+quantum_state = apply_total_unitary(X, [1,3], quantum_state)
+print_me(quantum_state, 'full')
+
+#quantum_state = apply_total_unitary(H,[target],quantum_state)
+measure(quantum_state, 4)
+'''
+#quantum_state = apply_total_unitary(H,[target],quantum_state)
+
+print_me(quantum_state, 'full')
 #project_on_blochsphere(state)
-measure(state, 4)
+
+'''
+
 '''
 # SWAP TEST with psi = |0> and phi = |1>
 state = create_state(3,[0])
