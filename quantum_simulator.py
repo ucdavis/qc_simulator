@@ -241,13 +241,12 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
 
             # initialize empty 4 x 4 matrix for controlled gate
             cgate = np.zeros((4,4))
-            #for k in range(num_qubits):
-            #    if k == control:
-                    # if control position is reached:
-                    # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
+
+            # if control position is reached:
+            # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
             cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
-                #else:
-                    # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
+
+            # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
             cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
             # convert to array
             cgate = np.array(cgate)
@@ -255,7 +254,6 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
             if num_qubits > 2:
                 # perform the tensor products with identity matrices
                 for k in range(num_qubits):
-                    #print all([(k>control),(k>target)])
                     # pre-multiply identities
                     if all([(k<control),(k<target)]):
                         print "pre-multiply"
@@ -269,6 +267,7 @@ def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
                     save_control = control
                     control = target
                     target = save_control
+
                 # use the Hadamard trick to reverse the direction of the CNOT gate
                 if control > target:
                     quantum_state = apply_total_unitary(H,[control],quantum_state)
@@ -345,7 +344,6 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
             value_save = value_save+2
 
         for m in iteration_list:
-            #print np.array([m,m+1])
             cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
 
         return cgate
@@ -377,10 +375,9 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
         return cgate
 
     else:
-        #print "I am here"
         qubit_pos = [ x-1 for x in qubit_pos]
         pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
-        cgate = np.kron(pre_cgate,eye)
+        cgate = np.kron(eye,pre_cgate)
 
         return cgate
 
@@ -388,21 +385,12 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
 quantum_state = create_state(4,[15])
 print_me(quantum_state, 'full')
-control1 = 2
-control2 = 1
-target = 3
-quantum_state = apply_total_unitary(X, [1,3], quantum_state)
-print_me(quantum_state, 'full')
 
-#quantum_state = apply_total_unitary(H,[target],quantum_state)
-measure(quantum_state, 4)
-'''
-#quantum_state = apply_total_unitary(H,[target],quantum_state)
+quantum_state = apply_total_unitary(X, [0,1,2], quantum_state)
 
 print_me(quantum_state, 'full')
 #project_on_blochsphere(state)
-
-'''
+measure(quantum_state, 4)
 
 '''
 # SWAP TEST with psi = |0> and phi = |1>
