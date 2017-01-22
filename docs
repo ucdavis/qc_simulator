@@ -171,6 +171,13 @@ print_me(create_state(2, [0,2]), 'full')
 
 
 *******************************
+GROVER ITERATION:
+
+grover_iteration(state, marked_pos)
+
+INPUT:
+			-> state
+			-> marked_pos: list of integers of the marked positions
 
 
 

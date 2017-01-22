@@ -117,10 +117,28 @@ def print_me(state, style = None): # print out current state.
         print tabulate(printdata, headers = ['Index', 'Probability',\
                                              'Amplitude' , 'Basis state'])
     if style == 'amplitudes':
-        print "Amplitudes: ", state
+        print "Amplitudes: \n", ["{0:.3f}".format(item) for item in state]
+        
+    if style == 'probabilities':
+        print "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
+                                    for item in state]
+
 
     print
     return None
+
+def grover_iteration(state, marked_pos):
+# performs a Grover iteration on a quantum state
+    # check if list is of desired format
+    if any(item > len(state) for item in marked_pos)\
+       or any( not isinstance(item, int) for item in marked_pos):
+        raise StandardError('Cannot interpret the list of marked positions'\
+                                    ' in grover_iteration()')
+        
+    marked_state = [- el if i in marked_pos else el \
+                    for i,el in enumerate(state)]
+    rotated_state = [-el + 2*np.mean(marked_state) for el in marked_state]
+    return rotated_state
 
 def project_on_blochsphere(state):
     if len(state) == 2:
