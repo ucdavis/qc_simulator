@@ -5,6 +5,8 @@ from math import sqrt,pi,e # some common function
 import math
 import qutip as qp # qutip library for Bloch sphere visualisations
 import cmath # library for complex numbers
+from collections import Counter
+from tabulate import tabulate # for nice printing
 
 #################### State functions
 def create_state(num_qubits, lis):
@@ -52,14 +54,31 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
 # Options: 'outcomes' prints every result while 'stats' prints an overview
     results = np.random.choice(len(state), runs, p=[abs(el)**2 for el in state])
     if output == 'outcomes':
-        print "Measurement Results"
-        print "Index  Basis state "
-        print "-----   ----------- "
+        print "\n Measurement Results: "
+        counter = 0
+        printdata = []
         for el_res in results:
-            print "{0:04}".format(el_res),'   |', "".join(( "{0:0", \
-                                str(int(np.log2(len(state)))),"b}")).format(el_res),'>'
-    #if output == 'stats':
-    #still to do
+            counter +=1
+            basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
+                                      "b}")).format(el_res) +'>'
+            row = [counter, el_res, basis ]
+            printdata.append(row)
+        print tabulate(printdata, headers = ['Run', 'Index', 'Basis state'])
+
+    if output == 'stats':
+        hist_dict = Counter(results)
+        indices = hist_dict.keys() 
+        occurences = [value/float(runs) for value in hist_dict.values()]
+        print "\n Measurement Statistics:"
+        printdata = []
+        for i in range(len(indices)):
+            basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
+                                      "b}")).format(indices[i]) +'>'
+            row =[ occurences[i], indices[i], basis ]
+            printdata.append(row)
+        print tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state'])
+
+           
     return None
 
 def print_me(state, style = None): # print out current state.
@@ -70,26 +89,33 @@ def print_me(state, style = None): # print out current state.
     np.set_printoptions(precision=3, suppress = True)
     print
     if style == None: # print all nonzero amplitudes
-        print "Index Probability Amplitude Basis state "
-        print "----- ----------- --------- ----------- "
+        print "\n Quantum State:"
+        printdata = []
         for i in range(len(state)):
             if not np.isclose(state[i],0.0):
                 basis_string = "".join(( "{0:0", \
                                 str(int(np.log2(len(state)))),"b}"))
-                print '', "{0:04}".format(i), '    ', \
-                        "{0:.3f}".format(abs(state[i])**2), '   ', \
-                        "{0:.3f}".format(state[i]), \
-                        "".join(('  |',basis_string.format(i) , '>' ))
+                row =[ i, "{0:.3f}".format(abs(state[i])**2), \
+                       "{0:.3f}".format(state[i]), \
+                        "".join(('  |',basis_string.format(i) , '>' ))]
+                
+                printdata.append(row)
+        print tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state'])
+               
     if style == 'full': # print all amplitudes
-        print "Index Probability Amplitude Basis state "
-        print "----- ----------- --------- ----------- "
+        print "\n Quantum State:"
+        printdata = []
         for i in range(len(state)):
-            basis_string = "".join(( "{0:0", str(int(np.log2(len(state)))),"b}"))
-            print '', "{0:04}".format(i), '    ', \
-                        "{0:.3f}".format(abs(state[i])**2), '   ', \
-                        "{0:.3f}".format(state[i]), \
-                        "".join(('  |',basis_string.format(i) , '>' ))
-
+            basis_string = "".join(( "{0:0", \
+                           str(int(np.log2(len(state)))),"b}"))
+            row =[ i, "{0:.3f}".format(abs(state[i])**2), \
+                   "{0:.3f}".format(state[i]), \
+                   "".join(('  |',basis_string.format(i) , '>' ))]
+                
+            printdata.append(row)
+        print tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state'])
     if style == 'amplitudes':
         print "Amplitudes: ", state
 

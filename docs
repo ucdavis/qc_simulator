@@ -106,16 +106,27 @@ OUTPUTS:
 
 -----Examples: 
 
-print measure(create_state(4, [0]), 1, 'outcomes')
+measure(create_state(4, [0,2,4,6]),2, 'outcomes') 
 
->>> Measurement Results
->>> Index  Basis state 
->>> -----   ----------- 
->>> 0000    | 0000 >
+>>> Measurement Results: 
+>>>   Run    Index  Basis state
+>>> -----  -------  -------------
+>>>     1        4  |0100>
+>>>     2        0  |0000>
 
-print measure(create_state(4, [0]), 1, 'stats')
 
-XXX
+
+measure(create_state(4, [0,2,4,6]),4, 'stats') 
+
+>>> Measurement Statistics: 
+>>>   rel. occ.    Index  Basis state
+>>> -----------  -------  -------------
+>>>        0.25        2  |0010>
+>>>        0.5         4  |0100>
+>>>        0.25        6  |0110>
+
+
+
 
 
 ****************************
@@ -138,19 +149,24 @@ OUTPUT:
 
 print print_me(create_state(2, [0]), None)
 
->>> Index Probability Amplitude Basis state 
->>> ----- ----------- --------- ----------- 
->>>  0000      1.000     1.000   |00>
+>>> Quantum State:
+>>>   Index    Probability    Amplitude  Basis state
+>>> -------  -------------  -----------  -------------
+>>>       0            0.5        0.707  |00>
+>>>       2            0.5        0.707  |10>
 
 
-print print_me(create_state(2, [0]), 'full')
 
->>> Index Probability Amplitude Basis state 
->>> ----- ----------- --------- ----------- 
->>>  0000      1.000     1.000   |00>
->>>  0001      0.000     0.000   |01>
->>>  0002      0.000     0.000   |10>
->>>  0003      0.000     0.000   |11>
+print_me(create_state(2, [0,2]), 'full')
+
+>>>  Quantum State:
+>>>   Index    Probability    Amplitude  Basis state
+>>> -------  -------------  -----------  -------------
+>>>       0            0.5        0.707  |00>
+>>>       1            0          0      |01>
+>>>       2            0.5        0.707  |10>
+>>>       3            0          0      |11>
+
 
 
 
