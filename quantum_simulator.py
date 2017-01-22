@@ -426,8 +426,9 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
 #################### Execution
 
-quantum_state = create_state(3,[0])
-quantum_state = apply_unitary(Rx(-math.pi/4), [1,2], quantum_state)
+quantum_state = create_state(1,[1+1j, 2+0.5j])
+print_me(quantum_state)
+quantum_state = apply_unitary(X, [0], quantum_state)
 project_on_blochsphere(quantum_state)
 
 '''
