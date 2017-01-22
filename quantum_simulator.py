@@ -8,6 +8,27 @@ import cmath # library for complex numbers
 from collections import Counter
 from tabulate import tabulate # for nice printing
 
+#################### Defining some elementary gates
+i_ = np.complex(0,1)
+H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
+X = np.array([[0, 1], [1, 0]])
+Y = np.array([[0, -i_],[i_, 0]])
+Z = np.array([[1,0],[0,-1]])
+eye = np.eye(2,2)
+S=np.array([[1,0],[0,i_]])
+Sdagger=np.array([[1,0],[0,-i_]])
+T=np.array([[1,0],[0, e**(i_*pi/4.)]])
+Tdagger=np.array([[1,0],[0, e**(-i_*pi/4.)]])
+
+def Rx(angle):
+    return np.array([[cmath.cos(angle/2),-i_*cmath.sin(angle/2)],[-i_*cmath.sin(angle/2), cmath.cos(angle/2)]])
+
+def Ry(angle):
+    return np.array([[cmath.cos(angle/2),-cmath.sin(angle/2)],[cmath.sin(angle/2),cmath.cos(angle/2)]])
+
+def Rz(angle):
+    return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
+
 #################### State functions
 def create_state(num_qubits, lis):
     state = np.zeros(num_qubits)
@@ -67,7 +88,7 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
 
     if output == 'stats':
         hist_dict = Counter(results)
-        indices = hist_dict.keys() 
+        indices = hist_dict.keys()
         occurences = [value/float(runs) for value in hist_dict.values()]
         print "\n Measurement Statistics:"
         printdata = []
@@ -78,7 +99,7 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
             printdata.append(row)
         print tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state'])
 
-           
+
     return None
 
 def print_me(state, style = None): # print out current state.
@@ -98,11 +119,11 @@ def print_me(state, style = None): # print out current state.
                 row =[ i, "{0:.3f}".format(abs(state[i])**2), \
                        "{0:.3f}".format(state[i]), \
                         "".join(('  |',basis_string.format(i) , '>' ))]
-                
+
                 printdata.append(row)
         print tabulate(printdata, headers = ['Index', 'Probability',\
                                              'Amplitude' , 'Basis state'])
-               
+
     if style == 'full': # print all amplitudes
         print "\n Quantum State:"
         printdata = []
@@ -112,13 +133,13 @@ def print_me(state, style = None): # print out current state.
             row =[ i, "{0:.3f}".format(abs(state[i])**2), \
                    "{0:.3f}".format(state[i]), \
                    "".join(('  |',basis_string.format(i) , '>' ))]
-                
+
             printdata.append(row)
         print tabulate(printdata, headers = ['Index', 'Probability',\
                                              'Amplitude' , 'Basis state'])
     if style == 'amplitudes':
         print "Amplitudes: \n", ["{0:.3f}".format(item) for item in state]
-        
+
     if style == 'probabilities':
         print "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
                                     for item in state]
@@ -134,7 +155,7 @@ def grover_iteration(state, marked_pos):
        or any( not isinstance(item, int) for item in marked_pos):
         raise StandardError('Cannot interpret the list of marked positions'\
                                     ' in grover_iteration()')
-        
+
     marked_state = [- el if i in marked_pos else el \
                     for i,el in enumerate(state)]
     rotated_state = [-el + 2*np.mean(marked_state) for el in marked_state]
@@ -205,28 +226,6 @@ def project_on_blochsphere(state):
                                 ' for single qubit states.')
 
 #################### Gate functions
-
-# define some elementary gates
-i_ = np.complex(0,1)
-H = 1./sqrt(2)*np.array([[1, 1],[1, -1]])
-X = np.array([[0, 1], [1, 0]])
-Y = np.array([[0, -i_],[i_, 0]])
-Z = np.array([[1,0],[0,-1]])
-eye = np.eye(2,2)
-S=np.array([[1,0],[0,i_]])
-Sdagger=np.array([[1,0],[0,-i_]])
-T=np.array([[1,0],[0, e**(i_*pi/4.)]])
-Tdagger=np.array([[1,0],[0, e**(-i_*pi/4.)]])
-
-def Rx(angle):
-    return np.array([[cmath.cos(angle/2),-i_*cmath.sin(angle/2)],[-i_*cmath.sin(angle/2), cmath.cos(angle/2)]])
-
-def Ry(angle):
-    return np.array([[cmath.cos(angle/2),-cmath.sin(angle/2)],[cmath.sin(angle/2),cmath.cos(angle/2)]])
-
-def Rz(angle):
-    return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
-
 
 def apply_unitary(gate_matrix, qubit_pos, quantum_state):
     num_qubits = int(math.log(len(quantum_state),2))
@@ -427,8 +426,8 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
 #################### Execution
 
-quantum_state = create_state(1,[0])
-quantum_state = apply_total_unitary(X, [0], quantum_state)
+quantum_state = create_state(3,[0])
+quantum_state = apply_unitary(Rx(-math.pi/4), [1,2], quantum_state)
 project_on_blochsphere(quantum_state)
 
 '''
