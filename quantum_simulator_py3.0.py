@@ -52,8 +52,8 @@ def create_state(num_qubits, lis):
         state = np.array(lis)
         if not is_normalised(state):
             state = renormalise(state)
-            print 'Note thate the state you generated was normalised ' \
-                    'automatically '
+            print( 'Note thate the state you generated was normalised ' \
+                    'automatically ')
 
     else:
         raise StandardError('Cannot interpret input of State() creator.'\
@@ -78,7 +78,7 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
 # Options: 'outcomes' prints every result while 'stats' prints an overview
     results = np.random.choice(len(state), runs, p=[abs(el)**2 for el in state])
     if output == 'outcomes':
-        print "\n Measurement Results: "
+        print( "\n Measurement Results: ")
         counter = 0
         printdata = []
         for el_res in results:
@@ -87,20 +87,20 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
                                       "b}")).format(el_res) +'>'
             row = [counter, el_res, basis ]
             printdata.append(row)
-        print tabulate(printdata, headers = ['Run', 'Index', 'Basis state'])
+        print( tabulate(printdata, headers = ['Run', 'Index', 'Basis state']))
 
     if output == 'stats':
         hist_dict = Counter(results)
-        indices = hist_dict.keys()
-        occurences = [value/float(runs) for value in hist_dict.values()]
-        print "\n Measurement Statistics:"
+        indices = list(hist_dict.keys())
+        occurences = [value/float(runs) for value in list(hist_dict.values())]
+        print( "\n Measurement Statistics:")
         printdata = []
         for i in range(len(indices)):
             basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
                                       "b}")).format(indices[i]) +'>'
             row =[ occurences[i], indices[i], basis ]
             printdata.append(row)
-        print tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state'])
+        print( tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state']))
 
 
     return None
@@ -111,9 +111,9 @@ def print_me(state, style = None): # print out current state.
 # 'slim' - As in 'None' but without zero amplitude entries
 # 'amplitudes' - only array of amplitudes
     np.set_printoptions(precision=3, suppress = True)
-    print
+    print()
     if style == None: # print all nonzero amplitudes
-        print "\n Quantum State:"
+        print( "\n Quantum State:")
         printdata = []
         for i in range(len(state)):
             if not np.isclose(state[i],0.0):
@@ -124,11 +124,11 @@ def print_me(state, style = None): # print out current state.
                         "".join(('  |',basis_string.format(i) , '>' ))]
 
                 printdata.append(row)
-        print tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state'])
+        print( tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state']))
 
     if style == 'full': # print all amplitudes
-        print "\n Quantum State:"
+        print( "\n Quantum State:")
         printdata = []
         for i in range(len(state)):
             basis_string = "".join(( "{0:0", \
@@ -138,17 +138,17 @@ def print_me(state, style = None): # print out current state.
                    "".join(('  |',basis_string.format(i) , '>' ))]
 
             printdata.append(row)
-        print tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state'])
+        print( tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state']))
     if style == 'amplitudes':
-        print "Amplitudes: \n", ["{0:.3f}".format(item) for item in state]
+        print( "Amplitudes: \n", ["{0:.3f}".format(item) for item in state])
 
     if style == 'probabilities':
-        print "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
-                                    for item in state]
+        print( "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
+                                    for item in state])
 
 
-    print
+    print()
     return None
 
 def grover_iteration(state, marked_pos):
@@ -299,7 +299,6 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
             # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
             cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
             # convert to array
-            print "here"
             cgate = np.array(cgate)
 
             if num_qubits > 2:
@@ -307,11 +306,9 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                 for k in range(num_qubits):
                     # pre-multiply identities
                     if all([(k<control),(k<target)]):
-                        print "pre-multiply"
                         cgate = np.kron(eye,cgate)
                     # post-multiply identities
                     elif all([(k>control),(k>target)]):
-                        print "post-multiply"
                         cgate = np.kron(cgate, eye)
 
                 if checker:
