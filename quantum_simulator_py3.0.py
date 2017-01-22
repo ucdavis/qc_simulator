@@ -52,8 +52,8 @@ def create_state(num_qubits, lis):
         state = np.array(lis)
         if not is_normalised(state):
             state = renormalise(state)
-            print 'Note thate the state you generated was normalised ' \
-                    'automatically '
+            print( 'Note thate the state you generated was normalised ' \
+                    'automatically ')
 
     else:
         raise StandardError('Cannot interpret input of State() creator.'\
@@ -78,7 +78,7 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
 # Options: 'outcomes' prints every result while 'stats' prints an overview
     results = np.random.choice(len(state), runs, p=[abs(el)**2 for el in state])
     if output == 'outcomes':
-        print "\n Measurement Results: "
+        print( "\n Measurement Results: ")
         counter = 0
         printdata = []
         for el_res in results:
@@ -87,20 +87,20 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
                                       "b}")).format(el_res) +'>'
             row = [counter, el_res, basis ]
             printdata.append(row)
-        print tabulate(printdata, headers = ['Run', 'Index', 'Basis state'])
+        print( tabulate(printdata, headers = ['Run', 'Index', 'Basis state']))
 
     if output == 'stats':
         hist_dict = Counter(results)
-        indices = hist_dict.keys()
-        occurences = [value/float(runs) for value in hist_dict.values()]
-        print "\n Measurement Statistics:"
+        indices = list(hist_dict.keys())
+        occurences = [value/float(runs) for value in list(hist_dict.values())]
+        print( "\n Measurement Statistics:")
         printdata = []
         for i in range(len(indices)):
             basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
                                       "b}")).format(indices[i]) +'>'
             row =[ occurences[i], indices[i], basis ]
             printdata.append(row)
-        print tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state'])
+        print( tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state']))
 
 
     return None
@@ -111,9 +111,9 @@ def print_me(state, style = None): # print out current state.
 # 'slim' - As in 'None' but without zero amplitude entries
 # 'amplitudes' - only array of amplitudes
     np.set_printoptions(precision=3, suppress = True)
-    print
+    print()
     if style == None: # print all nonzero amplitudes
-        print "\n Quantum State:"
+        print( "\n Quantum State:")
         printdata = []
         for i in range(len(state)):
             if not np.isclose(state[i],0.0):
@@ -124,11 +124,11 @@ def print_me(state, style = None): # print out current state.
                         "".join(('  |',basis_string.format(i) , '>' ))]
 
                 printdata.append(row)
-        print tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state'])
+        print( tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state']))
 
     if style == 'full': # print all amplitudes
-        print "\n Quantum State:"
+        print( "\n Quantum State:")
         printdata = []
         for i in range(len(state)):
             basis_string = "".join(( "{0:0", \
@@ -138,17 +138,17 @@ def print_me(state, style = None): # print out current state.
                    "".join(('  |',basis_string.format(i) , '>' ))]
 
             printdata.append(row)
-        print tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state'])
+        print( tabulate(printdata, headers = ['Index', 'Probability',\
+                                             'Amplitude' , 'Basis state']))
     if style == 'amplitudes':
-        print "Amplitudes: \n", ["{0:.3f}".format(item) for item in state]
+        print( "Amplitudes: \n", ["{0:.3f}".format(item) for item in state])
 
     if style == 'probabilities':
-        print "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
-                                    for item in state]
+        print( "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
+                                    for item in state])
 
 
-    print
+    print()
     return None
 
 def grover_iteration(state, marked_pos):
@@ -299,7 +299,6 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
             # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
             cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
             # convert to array
-            print "here"
             cgate = np.array(cgate)
 
             if num_qubits > 2:
@@ -307,11 +306,9 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                 for k in range(num_qubits):
                     # pre-multiply identities
                     if all([(k<control),(k<target)]):
-                        print "pre-multiply"
                         cgate = np.kron(eye,cgate)
                     # post-multiply identities
                     elif all([(k>control),(k>target)]):
-                        print "post-multiply"
                         cgate = np.kron(cgate, eye)
 
                 if checker:
@@ -431,61 +428,3 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
         cgate = np.kron(eye,pre_cgate)
 
         return cgate
-<<<<<<< HEAD
-
-#################### Execution
-
-quantum_state = create_state(1,[1+1j, 2+0.5j])
-print_me(quantum_state)
-quantum_state = apply_unitary(X, [0], quantum_state)
-project_on_blochsphere(quantum_state)
-
-'''
-quantum_state = create_state(4,[15])
-print_me(quantum_state, 'full')
-
-quantum_state = apply_total_unitary(X, [0,1,2], quantum_state)
-
-print_me(quantum_state, 'full')
-#project_on_blochsphere(state)
-measure(quantum_state, 4)
-'''
-'''
-    ##### CODE SNIPPET SWAP TEST #####
-
-# initialize initial quantum state |000>
-# 0th qubit is used as control
-# 1st and 2nd qubit are to be swapped
-quantum_state = create_state(3,[0])
-
-# Put the first qubit into state |+> = 0.707*|0> + 0.7071*|1>
-# Inner product is <q1|q2> = 0.7071
-quantum_state = apply_total_unitary(H,[1],quantum_state)
-
-# print the quantum state before SWAP test
-print_me(quantum_state, 'full')
-
-### START: MAIN SWAP TEST ALGORITHM
-
-# Put control qubit into uniform superposition
-quantum_state = apply_total_unitary(H,[0],quantum_state)
-
-# FREDKIN Gate (controlled SWAP)
-# decomposed into three Toffoli gates
-quantum_state = apply_total_unitary(X,[0,1,2],quantum_state)
-quantum_state = apply_total_unitary(X,[0,2,1],quantum_state)
-quantum_state = apply_total_unitary(X,[0,1,2],quantum_state)
-
-# interfere the two states with another Hadamard on the control qubit
-quantum_state = apply_total_unitary(H, [0], quantum_state)
-
-### END: MAIN SWAP TEST ALGORITHM
-
-# print the final quantum state
-print_me(quantum_state, 'full')
-
-# Measure and gather statistics
-measure(quantum_state,10)
-'''
-=======
->>>>>>> master
