@@ -382,6 +382,11 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
         return cgate
 
 #################### Execution
+
+quantum_state = create_state(1,[0])
+quantum_state = apply_total_unitary(X, [0], quantum_state)
+project_on_blochsphere(quantum_state)
+
 '''
 quantum_state = create_state(4,[15])
 print_me(quantum_state, 'full')
@@ -392,7 +397,7 @@ print_me(quantum_state, 'full')
 #project_on_blochsphere(state)
 measure(quantum_state, 4)
 '''
-
+'''
     ##### CODE SNIPPET SWAP TEST #####
 
 # initialize initial quantum state |000>
@@ -428,3 +433,4 @@ print_me(quantum_state, 'full')
 
 # Measure and gather statistics
 measure(quantum_state,10)
+'''
