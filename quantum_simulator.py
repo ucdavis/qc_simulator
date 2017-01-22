@@ -184,7 +184,7 @@ def Rz(angle):
     return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
 
 
-def apply_total_unitary(gate_matrix, qubit_pos, quantum_state):
+def apply_unitary(gate_matrix, qubit_pos, quantum_state):
     num_qubits = int(math.log(len(quantum_state),2))
 
     # check if input matrix is a 2x2 matrix
