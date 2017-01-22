@@ -42,7 +42,7 @@ def renormalise(state): # Renormalise the amplitude vector to unit length
         return state
 
 def is_normalised(state): #Check if a state is normalised
-    if np.isclose(float(np.vdot(state,state)), float(1.0),rtol = 1e-03):
+    if np.isclose(float(np.vdot(state,state)), float(1.0), rtol = 1e-02):
         return True
     else:
         return False

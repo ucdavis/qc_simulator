@@ -1,0 +1,160 @@
+
+*******************
+CREATE A NEW STATE:
+
+create_state(num_qubits, lis)
+
+INPUTS:
+-> num_qubits: 
+				number of qubits of the quantum system
+-> lis: 
+				if lis is a list of integers with length < num_qubits, it is 
+				interpreted as a list of positions of nonzero amplitudes in a 
+				uniform superposition 
+
+				if lis is a list of numbers with length = num_qubits, it is 
+				interpreted as an amplitude vector
+
+OUTPUTS:
+-> numpy array of amplitudes representing a quantum state
+
+
+-----Examples: 
+
+mynewstate = create_state(2, [0,3])
+print mynewstate
+
+>>> [ 0.707  0.     0.     0.707]
+
+mynewstate = create_state(2, [1/sqrt(2),1/sqrt(2), 0,0])
+print mynewstate
+
+>>> [ 0.707  0.707  0.     0.   ]
+
+mynewstate = create_state(2, [1, 2, 3, 4])
+print mynewstate
+
+>>> Note thate the state you generated was normalised automatically 
+>>> [ 0.183  0.365  0.548  0.73 ]
+
+mynewstate = create_state(2, [1,2,3,4,5])
+print mynewstate
+
+>>> StandardError: Cannot interpret input of State() creator. Please enter a list of valid amplitudes or positions.
+
+******************
+RENORMALISE VECTOR:
+
+renormalise(state)
+
+INPUTS: 
+			-> state: a numpy array representing the amplitude vector of
+								a non-normalised quantum state
+OUTPUTS:
+			-> the same amplitude vector but normalised to unit length
+
+
+-----Examples:
+ 
+my_normalised_state = normalise(state)
+print my_normalised_state
+
+>>> [ 0.707  0.     0.     0.707]
+
+******************
+FIND OUT IF VECTOR IS NORMALISED:
+
+is_normalised(state)
+
+INPUTS: 
+			-> state: a numpy array representing the amplitude vector of
+								a non-normalised quantum state
+OUTPUTS:
+			-> True or False (boolean), depending on whether the state is normalised
+					(error tolerance is set to 1e-03 = 0.001)
+
+-----Examples: 
+
+print is_normalised([ 0.707  0.     0.     0.707])
+
+>>> True
+
+print is_normalised([ 1, 2, 3, 4])
+
+>>> False
+
+***********************
+MEASURE A STATE
+
+measure(state, runs, output)
+
+INPUTS:
+			-> state: a numpy array representing the amplitude vector of
+								a quantum state
+			-> runs:  number of times the measurement has to be repeated 
+								(simulating a repeated preparation of the state before 
+								each measurement)
+			-> output: Type of printout
+								'outcomes' - prints a table of the (stochastic) measurement
+														outcomes
+								'stats' - prints a histogram of the (stochastic) measurement
+													outcomes
+
+OUTPUTS:
+			-> prints the measurement results
+
+
+-----Examples: 
+
+print measure(create_state(4, [0]), 1, 'outcomes')
+
+>>> Measurement Results
+>>> Index  Basis state 
+>>> -----   ----------- 
+>>> 0000    | 0000 >
+
+print measure(create_state(4, [0]), 1, 'stats')
+
+XXX
+
+
+****************************
+PRINT FUNCTION
+
+print_me(state, style)
+
+INPUT: 
+			-> state: a numpy array representing the amplitude vector of
+								a quantum state
+			-> style: How to print
+								-- 'None' or no entry: prints a table of only
+										the nonzero basis states
+								-- 'full': prints all states
+								-- 'amplitudes': prints the amplitude vector only
+OUTPUT:
+			-> printout of measurements
+
+----Examples:
+
+print print_me(create_state(2, [0]), None)
+
+>>> Index Probability Amplitude Basis state 
+>>> ----- ----------- --------- ----------- 
+>>>  0000      1.000     1.000   |00>
+
+
+print print_me(create_state(2, [0]), 'full')
+
+>>> Index Probability Amplitude Basis state 
+>>> ----- ----------- --------- ----------- 
+>>>  0000      1.000     1.000   |00>
+>>>  0001      0.000     0.000   |01>
+>>>  0002      0.000     0.000   |10>
+>>>  0003      0.000     0.000   |11>
+
+
+
+*******************************
+
+
+
