@@ -199,11 +199,11 @@ INPUT:
 
 -> `style`: How to print
 
-	> -- `None` or no entry: prints a table of only the nonzero basis states
+-- `None` or no entry: prints a table of only the nonzero basis states
 
-	> -- `full`: prints all states
+-- `full`: prints all states
 
-	> -- `amplitudes`: prints the amplitude vector only
+-- `amplitudes`: prints the amplitude vector only
 
 OUTPUT:
 
@@ -272,9 +272,9 @@ INPUTS:
 
 -> `output`: Type of printout:
 
--> `outcomes` - prints a table of the (stochastic) measurement outcomes <-
+-- `outcomes` - prints a table of the (stochastic) measurement outcomes
 
--> `stats` - prints a histogram of the (stochastic) measurement outcomes <-
+-- `stats` - prints a histogram of the (stochastic) measurement outcomes
 
 OUTPUT:
 
