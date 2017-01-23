@@ -18,7 +18,7 @@ This repository contains:
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-  - [Quantum States](#quantum-states)
+  - [Initialising Quantum States](#initialising-quantum-states)
   - [Quantum Gates](#quantum-gates)
   - [Measurement & Stats](#measurement-and-statistics)
 - [Contribute](#contribute)
@@ -38,9 +38,7 @@ Just download this repository as a ZIP file or clone it via your favourite shell
 
 
 
-### Quantum States
-
-**Creating a new quantum state**
+### Initialising Quantum States
 
 General syntax:
 
@@ -49,32 +47,50 @@ create_state(num_qubits, lis)
 ```
 
 INPUTS:
--> `num_qubits`: number of qubits of the quantum system
 
--> `lis`: if lis is a list of integers with length < num_qubits, it is
+-> `num_qubits`: number of qubits of the quantum system.
+
+-> `lis`: if `lis` is a list of integers with length < num_qubits, it is
 				interpreted as a list of positions of nonzero amplitudes in a
-				uniform superposition
-
-				if lis is a list of numbers with length = num_qubits, it is
-				interpreted as an amplitude vector
+				uniform superposition. If `lis` is a list of numbers with
+				length = num_qubits, it is interpreted as an amplitude vector.
 
 OUTPUTS:
--> numpy array of amplitudes representing a quantum state
 
-Examples:
+-> numpy array of amplitudes representing a quantum state.
+
+**Example 1:**
+
+Suppose you want to initialise a uniform superposition over the 0th and 3rd
+two-qubit states |00> and |11>. Therefore, we interpret the second input parameter
+`lis` as a list of positions of nonzero amplitudes in a
+uniform superposition. The syntax is as follows:
 
 ```
 mynewstate = create_state(2, [0,3])
 print mynewstate
 ```
 
-This outputs the amplitude vector `[ 0.707  0.     0.     0.707]`.
+This outputs the desired amplitude vector `[ 0.707  0.     0.     0.707]`.
 
+--------------------------------------------------------------------------------
+
+**Example 2:**
+
+Suppose you want a superposition over the first two two-qubit states |00> and |01>.
+Instead of using the input variable `lis` as a list of qubit positions we can fill
+it with four amplitudes corresponding to the four two-qubit states.
+To initialise a uniform superpositon over |00> and |01>, the following syntax can
+be used:
 ```
 mynewstate = create_state(2, [1/sqrt(2),1/sqrt(2), 0,0])
 print mynewstate
 ```
-This outputs the amplitude vector `[ 0.707  0.707  0.     0.   ]`.
+This outputs the desired amplitude vector `[ 0.707  0.707  0.     0.   ]`.
+
+--------------------------------------------------------------------------------
+
+**Example 3:**
 
 ```
 mynewstate = create_state(2, [1, 2, 3, 4])
@@ -87,13 +103,19 @@ Note thate the state you generated was normalised automatically
 [ 0.183  0.365  0.548  0.73 ]
 ```
 
+--------------------------------------------------------------------------------
+
+**Example 4:**
+
 ```
 mynewstate = create_state(2, [1,2,3,4,5])
 print mynewstate
 
 ```
-StandardError: Cannot interpret input of State() creator. Please enter a list of valid amplitudes or positions.
+StandardError: Cannot interpret input of State() creator.
+Please enter a list of valid amplitudes or positions.
 ```
+
 
 ******************
 RENORMALISE VECTOR:
