@@ -18,9 +18,12 @@ This repository contains:
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-  - [Initialising Quantum States](#initialising-quantum-states)
-  - [Quantum Gates](#quantum-gates)
-  - [Measurement & Stats](#measurement-and-statistics)
+  - [Initialising quantum states](#initialising-quantum-states)
+	- [Amplitude normalisation](#amplitude-normalisation)
+	- [Printing quantum states](#printing-quantum-states)
+  - [Quantum gates](#quantum-gates)
+	- [Special functions](#special-functions)
+  - [Measurement & statistics](#measurement-and-statistics)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -38,7 +41,7 @@ Just download this repository as a ZIP file or clone it via your favourite shell
 
 
 
-### Initialising Quantum States
+### Initialising quantum states
 
 General syntax:
 
@@ -120,9 +123,10 @@ Please enter a list of valid amplitudes or positions.
 ```
 
 --------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------
 
-## Amplitude Normalisation
+### Amplitude normalisation
 
 **Renormalising an amplitude vector**
 
@@ -150,7 +154,7 @@ This outputs the normalised amplitude vector `[ 0.707  0.     0.     0.707]`.
 
 --------------------------------------------------------------------------------
 
-**Finding out if amplitude vector is normalised**
+**Finding out if an amplitude vector is normalised**
 
 ```
 is_normalised(state)
@@ -173,119 +177,142 @@ print is_normalised([ 0.707  0.     0.     0.707])
 ```
 This outputs `True`.
 
+
 ```
 print is_normalised([ 1, 2, 3, 4])
 ```
 This outputs `False`.
 
+--------------------------------------------------------------------------------
 
-****************************
-PRINT FUNCTION
+--------------------------------------------------------------------------------
 
+### Printing quantum states
+
+```
 print_me(state, style)
+```
 
 INPUT:
-			-> state: a numpy array representing the amplitude vector of
-								a quantum state
-			-> style: How to print
-								-- 'None' or no entry: prints a table of only
+
+-> `state`: a numpy array representing the amplitude vector of a quantum state
+
+-> `style`: How to print
+
+								-- `None` or no entry: prints a table of only
 										the nonzero basis states
-								-- 'full': prints all states
-								-- 'amplitudes': prints the amplitude vector only
+
+								-- `full`: prints all states
+
+								-- `amplitudes`: prints the amplitude vector only
 OUTPUT:
-			-> printout of measurements
 
-----Examples:
+-> printout of measurements
 
+--------------------------------------------------------------------------------
+
+**Example 1:**
+
+```
 print print_me(create_state(2, [0]), None)
+```
 
->>> Quantum State:
->>>   Index    Probability    Amplitude  Basis state
->>> -------  -------------  -----------  -------------
->>>       0            0.5        0.707  |00>
->>>       2            0.5        0.707  |10>
+```
+Quantum State:
+  Index    Probability    Amplitude  Basis state
+-------  -------------  -----------  -------------
+      0            0.5        0.707  |00>
+      2            0.5        0.707  |10>
+```
 
-
-
+```
 print_me(create_state(2, [0,2]), 'full')
-
->>>  Quantum State:
->>>   Index    Probability    Amplitude  Basis state
->>> -------  -------------  -----------  -------------
->>>       0            0.5        0.707  |00>
->>>       1            0          0      |01>
->>>       2            0.5        0.707  |10>
->>>       3            0          0      |11>
-
-
-### Quantum Gates
-
-If your README is compliant with Standard-Readme and you're on GitHub, it would be great if you could add the badge. This allows people to link back to this Spec, and helps adoption of the README. The badge is **not required**.
-
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-
-To add in Markdown format, use this code:
-
-```
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 ```
 
-### Special Functions
+```
+Quantum State:
+Index    Probability    Amplitude  Basis state
+------  -------------  -----------  -------------
+    0            0.5        0.707  |00>
+    1            0          0      |01>
+    2            0.5        0.707  |10>
+    3            0          0      |11>
+```
 
-*******************************
-GROVER ITERATION:
+### Quantum gates
 
+
+
+### Special functions
+
+#### Grover iteration
+
+```
 grover_iteration(state, marked_pos)
+```
 
 INPUT:
-			-> state
-			-> marked_pos: list of integers of the marked positions
 
-### Measurement and Statistics
+-> `state`: a numpy array representing the amplitude vector of a quantum state
 
-To see how the specification has been applied, see the [example-readmes](example-readmes/).
+-> `marked_pos`: list of integers of the marked positions
 
-***********************
-MEASURE A STATE
+### Measurement and statistics
 
+```
 measure(state, runs, output)
+```
 
 INPUTS:
-			-> state: a numpy array representing the amplitude vector of
-								a quantum state
-			-> runs:  number of times the measurement has to be repeated
-								(simulating a repeated preparation of the state before
-								each measurement)
-			-> output: Type of printout
-								'outcomes' - prints a table of the (stochastic) measurement
+
+-> `state`: a numpy array representing the amplitude vector of a quantum state
+
+-> `runs`:  number of times the measurement has to be repeated
+(simulating a repeated preparation of the state before each measurement)
+
+-> `output`: Type of printout
+
+								`outcomes` - prints a table of the (stochastic) measurement
 														outcomes
-								'stats' - prints a histogram of the (stochastic) measurement
+
+								`stats` - prints a histogram of the (stochastic) measurement
 													outcomes
 
-OUTPUTS:
+OUTPUT:
+
 			-> prints the measurement results
 
+--------------------------------------------------------------------------------
 
------Examples:
+**Example 1:**
 
+```
 measure(create_state(4, [0,2,4,6]),2, 'outcomes')
+```
 
->>> Measurement Results:
->>>   Run    Index  Basis state
->>> -----  -------  -------------
->>>     1        4  |0100>
->>>     2        0  |0000>
+```
+Measurement Results:
+  Run    Index  Basis state
+-----  -------  -------------
+    1        4  |0100>
+    2        0  |0000>
+```
+--------------------------------------------------------------------------------
 
+**Example 2:**
 
-
+```
 measure(create_state(4, [0,2,4,6]),4, 'stats')
+```
 
->>> Measurement Statistics:
->>>   rel. occ.    Index  Basis state
->>> -----------  -------  -------------
->>>        0.25        2  |0010>
->>>        0.5         4  |0100>
->>>        0.25        6  |0110>
+```
+Measurement Statistics:
+  rel. occ.    Index  Basis state
+-----------  -------  -------------
+       0.25        2  |0010>
+       0.5         4  |0100>
+       0.25        6  |0110>
+```
 
 ## Contribute
 
