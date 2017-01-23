@@ -44,14 +44,14 @@ Just download this repository as a ZIP file or clone it via your favourite shell
 
 General syntax:
 
-'''
+```
 create_state(num_qubits, lis)
-'''
+```
 
 INPUTS:
--> 'num_qubits': number of qubits of the quantum system
+-> `num_qubits`: number of qubits of the quantum system
 
--> 'lis': if lis is a list of integers with length < num_qubits, it is
+-> `lis`: if lis is a list of integers with length < num_qubits, it is
 				interpreted as a list of positions of nonzero amplitudes in a
 				uniform superposition
 
@@ -63,34 +63,37 @@ OUTPUTS:
 
 Examples:
 
-'''
+```
 mynewstate = create_state(2, [0,3])
 print mynewstate
-'''
+```
 
-This outputs the amplitude vector '[ 0.707  0.     0.     0.707]'.
+This outputs the amplitude vector `[ 0.707  0.     0.     0.707]`.
 
-'''
+```
 mynewstate = create_state(2, [1/sqrt(2),1/sqrt(2), 0,0])
 print mynewstate
-'''
-This outputs the amplitude vector '[ 0.707  0.707  0.     0.   ]'.
+```
+This outputs the amplitude vector `[ 0.707  0.707  0.     0.   ]`.
 
-'''
+```
 mynewstate = create_state(2, [1, 2, 3, 4])
 print mynewstate
-'''
+```
 
 Console output:
-'''
+```
 Note thate the state you generated was normalised automatically
 [ 0.183  0.365  0.548  0.73 ]
-'''
+```
 
+```
 mynewstate = create_state(2, [1,2,3,4,5])
 print mynewstate
 
->>> StandardError: Cannot interpret input of State() creator. Please enter a list of valid amplitudes or positions.
+```
+StandardError: Cannot interpret input of State() creator. Please enter a list of valid amplitudes or positions.
+```
 
 ******************
 RENORMALISE VECTOR:
