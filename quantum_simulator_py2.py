@@ -63,7 +63,7 @@ def create_state(num_qubits, lis):
 
 
 def renormalise(state): # Renormalise the amplitude vector to unit length
-        normalis_factor = float(np.sqrt(np.vdot(state,state)))
+        normalis_factor = float(np.real(np.sqrt(np.vdot(state,state))))
         state = state/normalis_factor
         return state
 
@@ -306,11 +306,9 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                 for k in range(num_qubits):
                     # pre-multiply identities
                     if all([(k<control),(k<target)]):
-                        print "pre-multiply"
                         cgate = np.kron(eye,cgate)
                     # post-multiply identities
                     elif all([(k>control),(k>target)]):
-                        print "post-multiply"
                         cgate = np.kron(cgate, eye)
 
                 if checker:
@@ -320,11 +318,11 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
                 # use the Hadamard trick to reverse the direction of the CNOT gate
                 if control > target:
-                    quantum_state = apply_total_unitary(H,[control],quantum_state)
-                    quantum_state = apply_total_unitary(H,[target],quantum_state)
+                    quantum_state = apply_unitary(H,[control],quantum_state)
+                    quantum_state = apply_unitary(H,[target],quantum_state)
                     quantum_state = np.dot(cgate,quantum_state)
-                    quantum_state = apply_total_unitary(H,[control],quantum_state)
-                    quantum_state = apply_total_unitary(H,[target],quantum_state)
+                    quantum_state = apply_unitary(H,[control],quantum_state)
+                    quantum_state = apply_unitary(H,[target],quantum_state)
 
                     return quantum_state
 
@@ -356,21 +354,21 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                                 'Only Toffoli supported so far. '\
                                 'Input matrix must be the X gate.')
 
-        quantum_state = apply_total_unitary(H,[target],quantum_state)
-        quantum_state = apply_total_unitary(X,[control1,target],quantum_state)
-        quantum_state = apply_total_unitary(Tdagger,[target],quantum_state)
-        quantum_state = apply_total_unitary(X,[control2,target],quantum_state)
-        quantum_state = apply_total_unitary(T,[target],quantum_state)
-        quantum_state = apply_total_unitary(X,[control1,target],quantum_state)
-        quantum_state = apply_total_unitary(Tdagger,[target],quantum_state)
-        quantum_state = apply_total_unitary(X,[control2,target],quantum_state)
-        quantum_state = apply_total_unitary(T,[target],quantum_state)
-        quantum_state = apply_total_unitary(T,[control1],quantum_state)
-        quantum_state = apply_total_unitary(X,[control2,control1],quantum_state)
-        quantum_state = apply_total_unitary(H,[target],quantum_state)
-        quantum_state = apply_total_unitary(T,[control2],quantum_state)
-        quantum_state = apply_total_unitary(Tdagger,[control1],quantum_state)
-        quantum_state = apply_total_unitary(X,[control2,control1],quantum_state)
+        quantum_state = apply_unitary(H,[target],quantum_state)
+        quantum_state = apply_unitary(X,[control1,target],quantum_state)
+        quantum_state = apply_unitary(Tdagger,[target],quantum_state)
+        quantum_state = apply_unitary(X,[control2,target],quantum_state)
+        quantum_state = apply_unitary(T,[target],quantum_state)
+        quantum_state = apply_unitary(X,[control1,target],quantum_state)
+        quantum_state = apply_unitary(Tdagger,[target],quantum_state)
+        quantum_state = apply_unitary(X,[control2,target],quantum_state)
+        quantum_state = apply_unitary(T,[target],quantum_state)
+        quantum_state = apply_unitary(T,[control1],quantum_state)
+        quantum_state = apply_unitary(X,[control2,control1],quantum_state)
+        quantum_state = apply_unitary(H,[target],quantum_state)
+        quantum_state = apply_unitary(T,[control2],quantum_state)
+        quantum_state = apply_unitary(Tdagger,[control1],quantum_state)
+        quantum_state = apply_unitary(X,[control2,control1],quantum_state)
 
         return quantum_state
 
