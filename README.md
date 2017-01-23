@@ -21,9 +21,9 @@ This repository contains:
   - [Initialising quantum states](#initialising-quantum-states)
 	- [Amplitude normalisation](#amplitude-normalisation)
 	- [Printing quantum states](#printing-quantum-states)
-  - [Quantum gates](#quantum-gates)
+	- [Quantum gates](#quantum-gates)
 	- [Special functions](#special-functions)
-  - [Measurement & statistics](#measurement-and-statistics)
+	- [Measurement & statistics](#measurement-and-statistics)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -199,12 +199,12 @@ INPUT:
 
 -> `style`: How to print
 
-								-- `None` or no entry: prints a table of only
-										the nonzero basis states
+-- `None` or no entry: prints a table of only the nonzero basis states
 
-								-- `full`: prints all states
+-- `full`: prints all states
 
-								-- `amplitudes`: prints the amplitude vector only
+-- `amplitudes`: prints the amplitude vector only
+
 OUTPUT:
 
 -> printout of measurements
@@ -270,12 +270,12 @@ INPUTS:
 -> `runs`:  number of times the measurement has to be repeated
 (simulating a repeated preparation of the state before each measurement)
 
--> `output`: Type of printout
+-> `output`: Type of printout:
 
-								`outcomes` - prints a table of the (stochastic) measurement
+> `outcomes` - prints a table of the (stochastic) measurement
 														outcomes
 
-								`stats` - prints a histogram of the (stochastic) measurement
+> `stats` - prints a histogram of the (stochastic) measurement
 													outcomes
 
 OUTPUT:
