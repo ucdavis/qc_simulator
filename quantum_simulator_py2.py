@@ -34,7 +34,7 @@ def Rz(angle):
 
 #################### State functions
 def create_state(num_qubits, lis):
-    state = np.zeros(num_qubits)
+    state = np.zeros(num_qubits,dtype=np.complex128)
     # if the list has less entries than amplitudes (2**n),
     # interpret the entries as positions
     if len(lis) < 2**num_qubits:
@@ -45,11 +45,11 @@ def create_state(num_qubits, lis):
                                     ' Please enter a list of valid positions.')
         # initialise state
         state = np.array([1./sqrt(len(lis)) if i in lis else 0 \
-                                 for i in range(2**num_qubits)])
+                                 for i in range(2**num_qubits)],dtype=np.complex128)
     # else if the list has as many entries as amplitudes (2**n),
     # interpret the entries as amplitudes
     elif len(lis) == 2**num_qubits:
-        state = np.array(lis)
+        state = np.array(lis,dtype=np.complex128)
         if not is_normalised(state):
             state = renormalise(state)
             print 'Note thate the state you generated was normalised ' \
@@ -68,7 +68,7 @@ def renormalise(state): # Renormalise the amplitude vector to unit length
         return state
 
 def is_normalised(state): #Check if a state is normalised
-    if np.isclose(float(np.vdot(state,state)), float(1.0),rtol = 1e-03):
+    if np.isclose(float(np.real(np.vdot(state,state))), float(1.0),rtol = 1e-03):
         return True
     else:
         return False
@@ -290,16 +290,15 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                 target = save_control
 
             # initialize empty 4 x 4 matrix for controlled gate
-            cgate = np.zeros((4,4))
+            cgate = np.zeros((4,4),dtype=np.complex128)
 
             # if control position is reached:
             # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
-            cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
+            cgate += np.kron((np.matrix(create_state(1,[0,1])).transpose())*np.matrix(create_state(1,[0,1])), np.matrix(gate_matrix))
 
             # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
-            cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
+            cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), np.matrix(eye).astype(np.complex128))
             # convert to array
-            print "here"
             cgate = np.array(cgate)
 
             if num_qubits > 2:
