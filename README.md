@@ -20,13 +20,13 @@ This repository contains:
 - [Usage](#usage)
   - [Quantum States](#quantum-states)
   - [Quantum Gates](#quantum-gates)
-  - [Measurement & Stats](#measurement-&-stats)
+  - [Measurement & Stats](#measurement-and-statistics)
 - [Contribute](#contribute)
 - [License](#license)
 
 ## Background
 
-This library was designed and written by [@mariaschuld](https://github.com/mariaschuld) and [@markf94](https://github.com/markf94) from the [Centre for Quantum Technology](http://quantum.ukzn.ac.za/) at the [University of KwaZulu-Natal](www.ukzn.ac.za). It is meant as an educational tool to simulate quantum computations. The main aim was to come up with a syntax that is easy to read & understand for beginners. Additionally, the developed library is scalable to any number of qubits unless your RAM allows it. The library includes initialisation of arbitrary quantum states and amplitude distributions, Bloch sphere projections, a variety of single-qubit gates, all-to-all connected CNOT and Toffoli (CCNOT) gates. With easy syntax and without visible for-loops the simulation can be repeated many times and the resulting statistics are displayed.
+This library was designed and written by [@mariaschuld](https://github.com/mariaschuld) and [@markf94](https://github.com/markf94) from the [Centre for Quantum Technology](http://quantum.ukzn.ac.za/) at the [University of KwaZulu-Natal](www.ukzn.ac.za). It is meant as an educational tool to simulate quantum computations. The main aim was to come up with a syntax that is easy to read & understand for beginners. Additionally, the developed library is scalable to any number of qubits only limited by the amount of available RAM in your computer. The library includes initialisation of arbitrary quantum states and amplitude distributions, Bloch sphere projections, a variety of single-qubit gates, all-to-all connected controlled-U and Toffoli (CCNOT) gates. With easy syntax and without visible for-loops the simulation can be repeated many times with clear output of the resulting statistics.
 
 ## Install
 
@@ -38,18 +38,20 @@ Just download this repository as a ZIP file or clone it via your favourite shell
 
 
 
-### Quantum states
+### Quantum States
 
-To*******************
-CREATE A NEW STATE:
+**Creating a new quantum state**
 
+General syntax:
+
+'''
 create_state(num_qubits, lis)
+'''
 
 INPUTS:
--> num_qubits:
-				number of qubits of the quantum system
--> lis:
-				if lis is a list of integers with length < num_qubits, it is
+-> 'num_qubits': number of qubits of the quantum system
+
+-> 'lis': if lis is a list of integers with length < num_qubits, it is
 				interpreted as a list of positions of nonzero amplitudes in a
 				uniform superposition
 
@@ -59,24 +61,31 @@ INPUTS:
 OUTPUTS:
 -> numpy array of amplitudes representing a quantum state
 
+Examples:
 
------Examples:
-
+'''
 mynewstate = create_state(2, [0,3])
 print mynewstate
+'''
 
->>> [ 0.707  0.     0.     0.707]
+This outputs the amplitude vector '[ 0.707  0.     0.     0.707]'.
 
+'''
 mynewstate = create_state(2, [1/sqrt(2),1/sqrt(2), 0,0])
 print mynewstate
+'''
+This outputs the amplitude vector '[ 0.707  0.707  0.     0.   ]'.
 
->>> [ 0.707  0.707  0.     0.   ]
-
+'''
 mynewstate = create_state(2, [1, 2, 3, 4])
 print mynewstate
+'''
 
->>> Note thate the state you generated was normalised automatically
->>> [ 0.183  0.365  0.548  0.73 ]
+Console output:
+'''
+Note thate the state you generated was normalised automatically
+[ 0.183  0.365  0.548  0.73 ]
+'''
 
 mynewstate = create_state(2, [1,2,3,4,5])
 print mynewstate
@@ -221,7 +230,7 @@ INPUT:
 			-> marked_pos: list of integers of the marked positions
 
 
-### Quantum gates
+### Quantum Gates
 
 If your README is compliant with Standard-Readme and you're on GitHub, it would be great if you could add the badge. This allows people to link back to this Spec, and helps adoption of the README. The badge is **not required**.
 
@@ -233,7 +242,7 @@ To add in Markdown format, use this code:
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 ```
 
-### Measurement & stats
+### Measurement and Statistics
 
 To see how the specification has been applied, see the [example-readmes](example-readmes/).
 
