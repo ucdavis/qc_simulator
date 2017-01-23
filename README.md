@@ -55,9 +55,11 @@ INPUTS:
 				uniform superposition. If `lis` is a list of numbers with
 				length = num_qubits, it is interpreted as an amplitude vector.
 
-OUTPUTS:
+OUTPUT:
 
 -> numpy array of amplitudes representing a quantum state.
+
+--------------------------------------------------------------------------------
 
 **Example 1:**
 
@@ -110,53 +112,138 @@ Note thate the state you generated was normalised automatically
 ```
 mynewstate = create_state(2, [1,2,3,4,5])
 print mynewstate
+```
 
 ```
 StandardError: Cannot interpret input of State() creator.
 Please enter a list of valid amplitudes or positions.
 ```
 
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-******************
-RENORMALISE VECTOR:
+## Amplitude Normalisation
 
+**Renormalising an amplitude vector**
+
+```
 renormalise(state)
+```
 
 INPUTS:
-			-> state: a numpy array representing the amplitude vector of
-								a non-normalised quantum state
-OUTPUTS:
-			-> the same amplitude vector but normalised to unit length
 
+-> `state`: a numpy array representing the amplitude vector of a non-normalised quantum state
 
------Examples:
+OUTPUT:
 
+-> the same amplitude vector but normalised to unit length
+
+--------------------------------------------------------------------------------
+
+**Example 1:**
+
+```
 my_normalised_state = normalise(state)
 print my_normalised_state
+```
+This outputs the normalised amplitude vector `[ 0.707  0.     0.     0.707]`.
 
->>> [ 0.707  0.     0.     0.707]
+--------------------------------------------------------------------------------
 
-******************
-FIND OUT IF VECTOR IS NORMALISED:
+**Finding out if amplitude vector is normalised**
 
+```
 is_normalised(state)
+```
 
 INPUTS:
-			-> state: a numpy array representing the amplitude vector of
+
+-> `state`: a numpy array representing the amplitude vector of
 								a non-normalised quantum state
-OUTPUTS:
-			-> True or False (boolean), depending on whether the state is normalised
+
+OUTPUT:
+
+-> `True` or `False` (boolean), depending on whether the state is normalised
 					(error tolerance is set to 1e-03 = 0.001)
 
------Examples:
+**Example 1:**
 
+```
 print is_normalised([ 0.707  0.     0.     0.707])
+```
+This outputs `True`.
 
->>> True
-
+```
 print is_normalised([ 1, 2, 3, 4])
+```
+This outputs `False`.
 
->>> False
+
+****************************
+PRINT FUNCTION
+
+print_me(state, style)
+
+INPUT:
+			-> state: a numpy array representing the amplitude vector of
+								a quantum state
+			-> style: How to print
+								-- 'None' or no entry: prints a table of only
+										the nonzero basis states
+								-- 'full': prints all states
+								-- 'amplitudes': prints the amplitude vector only
+OUTPUT:
+			-> printout of measurements
+
+----Examples:
+
+print print_me(create_state(2, [0]), None)
+
+>>> Quantum State:
+>>>   Index    Probability    Amplitude  Basis state
+>>> -------  -------------  -----------  -------------
+>>>       0            0.5        0.707  |00>
+>>>       2            0.5        0.707  |10>
+
+
+
+print_me(create_state(2, [0,2]), 'full')
+
+>>>  Quantum State:
+>>>   Index    Probability    Amplitude  Basis state
+>>> -------  -------------  -----------  -------------
+>>>       0            0.5        0.707  |00>
+>>>       1            0          0      |01>
+>>>       2            0.5        0.707  |10>
+>>>       3            0          0      |11>
+
+
+### Quantum Gates
+
+If your README is compliant with Standard-Readme and you're on GitHub, it would be great if you could add the badge. This allows people to link back to this Spec, and helps adoption of the README. The badge is **not required**.
+
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+
+To add in Markdown format, use this code:
+
+```
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+```
+
+### Special Functions
+
+*******************************
+GROVER ITERATION:
+
+grover_iteration(state, marked_pos)
+
+INPUT:
+			-> state
+			-> marked_pos: list of integers of the marked positions
+
+### Measurement and Statistics
+
+To see how the specification has been applied, see the [example-readmes](example-readmes/).
 
 ***********************
 MEASURE A STATE
@@ -199,77 +286,6 @@ measure(create_state(4, [0,2,4,6]),4, 'stats')
 >>>        0.25        2  |0010>
 >>>        0.5         4  |0100>
 >>>        0.25        6  |0110>
-
-
-
-
-
-****************************
-PRINT FUNCTION
-
-print_me(state, style)
-
-INPUT:
-			-> state: a numpy array representing the amplitude vector of
-								a quantum state
-			-> style: How to print
-								-- 'None' or no entry: prints a table of only
-										the nonzero basis states
-								-- 'full': prints all states
-								-- 'amplitudes': prints the amplitude vector only
-OUTPUT:
-			-> printout of measurements
-
-----Examples:
-
-print print_me(create_state(2, [0]), None)
-
->>> Quantum State:
->>>   Index    Probability    Amplitude  Basis state
->>> -------  -------------  -----------  -------------
->>>       0            0.5        0.707  |00>
->>>       2            0.5        0.707  |10>
-
-
-
-print_me(create_state(2, [0,2]), 'full')
-
->>>  Quantum State:
->>>   Index    Probability    Amplitude  Basis state
->>> -------  -------------  -----------  -------------
->>>       0            0.5        0.707  |00>
->>>       1            0          0      |01>
->>>       2            0.5        0.707  |10>
->>>       3            0          0      |11>
-
-
-
-
-*******************************
-GROVER ITERATION:
-
-grover_iteration(state, marked_pos)
-
-INPUT:
-			-> state
-			-> marked_pos: list of integers of the marked positions
-
-
-### Quantum Gates
-
-If your README is compliant with Standard-Readme and you're on GitHub, it would be great if you could add the badge. This allows people to link back to this Spec, and helps adoption of the README. The badge is **not required**.
-
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-
-To add in Markdown format, use this code:
-
-```
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-```
-
-### Measurement and Statistics
-
-To see how the specification has been applied, see the [example-readmes](example-readmes/).
 
 ## Contribute
 
