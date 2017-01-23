@@ -272,11 +272,9 @@ INPUTS:
 
 -> `output`: Type of printout:
 
-> `outcomes` - prints a table of the (stochastic) measurement
-														outcomes
+-> `outcomes` - prints a table of the (stochastic) measurement outcomes <-
 
-> `stats` - prints a histogram of the (stochastic) measurement
-													outcomes
+-> `stats` - prints a histogram of the (stochastic) measurement outcomes <-
 
 OUTPUT:
 
