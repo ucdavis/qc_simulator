@@ -1,6 +1,5 @@
 # Quantum Computing Simulator (qc_simulator)
 
-[![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg)](https://www.github.com/mariaschuld/qc_simulator.git)
 [![PyPI](https://img.shields.io/pypi/pyversions/Django.svg)]()
 
 A simple educational **quantum computing simulator** written in Python. The library was specifically designed for the **28th Chris Engelbrecht Summer School of the South African National Institute for Theoretical Physics**.
@@ -19,9 +18,9 @@ This repository contains:
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-  - [Quantum States](#qstates)
-  - [Quantum Gates](#qgates)
-  - [Measurement & Stats](#measurestats)
+  - [Quantum States](#quantum-states)
+  - [Quantum Gates](#quantum-gates)
+  - [Measurement & Stats](#measurement-&-stats)
 - [Contribute](#contribute)
 - [License](#license)
 
