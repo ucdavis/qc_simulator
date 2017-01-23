@@ -18,7 +18,7 @@ This repository contains:
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
-  - [Initialising quantum states](#initialising-quantum-states)
+	- [Initialising quantum states](#initialising-quantum-states)
 	- [Amplitude normalisation](#amplitude-normalisation)
 	- [Printing quantum states](#printing-quantum-states)
 	- [Quantum gates](#quantum-gates)
@@ -199,11 +199,11 @@ INPUT:
 
 -> `style`: How to print
 
--- `None` or no entry: prints a table of only the nonzero basis states
+	> -- `None` or no entry: prints a table of only the nonzero basis states
 
--- `full`: prints all states
+	> -- `full`: prints all states
 
--- `amplitudes`: prints the amplitude vector only
+	> -- `amplitudes`: prints the amplitude vector only
 
 OUTPUT:
 
