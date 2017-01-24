@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function, division
 import numpy as np # for numerics
 import random # for random number generation
 from math import sqrt,pi,e # some common function
@@ -6,7 +7,7 @@ import math
 #import qutip as qp # qutip library for Bloch sphere visualisations
 import cmath # library for complex numbers
 from collections import Counter
-from tabulate import tabulate # for nice printing
+#from tabulate import tabulate # for nice printing
 
 #################### Defining some elementary gates
 i_ = np.complex(0,1)
@@ -78,29 +79,24 @@ def measure(state, runs = 1, output = 'outcomes'): #perform measurements on the 
 # Options: 'outcomes' prints every result while 'stats' prints an overview
     results = np.random.choice(len(state), runs, p=[abs(el)**2 for el in state])
     if output == 'outcomes':
-        print( "\n Measurement Results: ")
-        counter = 0
-        printdata = []
+        print ("Measurement Results")
+        print ("Index  Basis state ")
+        print ("-----   ----------- ")
         for el_res in results:
-            counter +=1
-            basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
-                                      "b}")).format(el_res) +'>'
-            row = [counter, el_res, basis ]
-            printdata.append(row)
-        print( tabulate(printdata, headers = ['Run', 'Index', 'Basis state']))
+            print(el_res,'       |', "".join(( "{0:0", \
+                            str(int(np.log2(len(state)))),"b}")).format(el_res),'>')
 
     if output == 'stats':
         hist_dict = Counter(results)
         indices = list(hist_dict.keys())
         occurences = [value/float(runs) for value in list(hist_dict.values())]
-        print( "\n Measurement Statistics:")
-        printdata = []
+        print ("\n Measurement Statistics:")
+        print ("rel. occ.   Index   Basis state")
+        print ("---------   ------  -----------")
         for i in range(len(indices)):
-            basis = '|' +  "".join( ( "{0:0", str(int(np.log2(len(state)))),\
-                                      "b}")).format(indices[i]) +'>'
-            row =[ occurences[i], indices[i], basis ]
-            printdata.append(row)
-        print( tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state']))
+            print(occurences[i], "          ",indices[i],'         |', "".join(( "{0:0", \
+                            str(int(np.log2(len(state)))),"b}")).format(results[i]),'>')
+        #print tabulate(printdata, headers = ['rel. occ.', 'Index', 'Basis state'])
 
 
     return None
@@ -111,44 +107,36 @@ def print_me(state, style = None): # print out current state.
 # 'slim' - As in 'None' but without zero amplitude entries
 # 'amplitudes' - only array of amplitudes
     np.set_printoptions(precision=3, suppress = True)
-    print()
+    print
     if style == None: # print all nonzero amplitudes
-        print( "\n Quantum State:")
-        printdata = []
+        print("Index Probability Amplitude Basis state ")
+        print("----- ----------- --------- ----------- ")
         for i in range(len(state)):
             if not np.isclose(state[i],0.0):
                 basis_string = "".join(( "{0:0", \
                                 str(int(np.log2(len(state)))),"b}"))
-                row =[ i, "{0:.3f}".format(abs(state[i])**2), \
-                       "{0:.3f}".format(state[i]), \
-                        "".join(('  |',basis_string.format(i) , '>' ))]
-
-                printdata.append(row)
-        print( tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state']))
-
+                print('', "{0:04}".format(i), '    ', \
+                        "{0:.3f}".format(abs(state[i])**2), '   ', \
+                        "{0:.3f}".format(state[i]), \
+                        "".join(('  |',basis_string.format(i) , '>' )))
     if style == 'full': # print all amplitudes
-        print( "\n Quantum State:")
-        printdata = []
+        print("Index Probability Amplitude Basis state ")
+        print("----- ----------- --------- ----------- ")
         for i in range(len(state)):
-            basis_string = "".join(( "{0:0", \
-                           str(int(np.log2(len(state)))),"b}"))
-            row =[ i, "{0:.3f}".format(abs(state[i])**2), \
-                   "{0:.3f}".format(state[i]), \
-                   "".join(('  |',basis_string.format(i) , '>' ))]
+            basis_string = "".join(( "{0:0", str(int(np.log2(len(state)))),"b}"))
+            print('', "{0:04}".format(i), '    ', \
+                        "{0:.3f}".format(abs(state[i])**2), '   ', \
+                        "{0:.3f}".format(state[i]), \
+                        "".join(('  |',basis_string.format(i) , '>' )))
 
-            printdata.append(row)
-        print( tabulate(printdata, headers = ['Index', 'Probability',\
-                                             'Amplitude' , 'Basis state']))
     if style == 'amplitudes':
-        print( "Amplitudes: \n", ["{0:.3f}".format(item) for item in state])
+        print("Amplitudes: ", state)
 
     if style == 'probabilities':
-        print( "Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
+        print("Probabilities:\n ", ["{0:.3f}".format(np.abs(item)**2) \
                                     for item in state])
 
-
-    print()
+    print
     return None
 
 def grover_iteration(state, marked_pos):
@@ -164,6 +152,7 @@ def grover_iteration(state, marked_pos):
     rotated_state = [-el + 2*np.mean(marked_state) for el in marked_state]
     return rotated_state
 
+'''
 def project_on_blochsphere(state):
     if len(state) == 2:
         alpha = state[0]
@@ -228,6 +217,7 @@ def project_on_blochsphere(state):
         raise StandardError('Bloch projection is only supported'\
                                 ' for single qubit states.')
 
+'''
 #################### Gate functions
 
 def apply_unitary(gate_matrix, qubit_pos, quantum_state):
@@ -385,15 +375,15 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
     if ((control-target) == -(num_qubits-1)):
         cgate = np.eye(num_amplitudes,num_amplitudes)
 
-        iteration_list = np.array(num_amplitudes/2)
-        value_save = num_amplitudes/2
-        for k in range(num_amplitudes/4-1):
+        iteration_list = np.array(int(num_amplitudes/2))
+        print(iteration_list)
+        value_save = int(num_amplitudes/2)
+        for k in range(int(num_amplitudes/4-1)):
             iteration_list = np.append(iteration_list,value_save+2)
             value_save = value_save+2
 
         for m in iteration_list:
             cgate[np.array([m,m+1])]=cgate[np.array([m+1,m])]
-
         return cgate
 
     elif ((control-target) == num_qubits-1):
@@ -401,30 +391,30 @@ def create_controlledGate(gate_matrix, qubit_pos, num_amplitudes, num_qubits):
 
         iteration_list = np.array(1)
         value_save = 1
-        for k in range(num_amplitudes/4-1):
+        for k in range(int(num_amplitudes/4-1)):
             iteration_list = np.append(iteration_list,value_save+2)
             value_save = value_save+2
 
         for m in iteration_list:
-            cgate[np.array([m,m+num_amplitudes/2])]=cgate[np.array([m+num_amplitudes/2,m])]
+            cgate[np.array([m,m+int(num_amplitudes/2)])]=cgate[np.array([m+int(num_amplitudes/2),m])]
 
         return cgate
 
     elif (control <= num_qubits-2) and (target <= num_qubits-2):
-        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
+        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, int(num_amplitudes/2), num_qubits-1)
         cgate = np.kron(pre_cgate,eye)
 
         return cgate
 
     elif (control == num_qubits-1) or (target == num_qubits-2):
-        pre_cgate = create_controlledGate(gate_matrix, [qubit_pos[0]-1, qubit_pos[1]-1], num_amplitudes/2, num_qubits-1)
+        pre_cgate = create_controlledGate(gate_matrix, [qubit_pos[0]-1, qubit_pos[1]-1], int(num_amplitudes/2), num_qubits-1)
         cgate = np.kron(eye,pre_cgate)
 
         return cgate
 
     else:
         qubit_pos = [ x-1 for x in qubit_pos]
-        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, num_amplitudes/2, num_qubits-1)
+        pre_cgate = create_controlledGate(gate_matrix, qubit_pos, int(num_amplitudes/2), num_qubits-1)
         cgate = np.kron(eye,pre_cgate)
 
         return cgate
