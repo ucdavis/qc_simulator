@@ -3,7 +3,7 @@ import numpy as np # for numerics
 import random # for random number generation
 from math import sqrt,pi,e # some common function
 import math
-import qutip as qp # qutip library for Bloch sphere visualisations
+#import qutip as qp # qutip library for Bloch sphere visualisations
 import cmath # library for complex numbers
 from collections import Counter
 from tabulate import tabulate # for nice printing
@@ -234,7 +234,7 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
     num_qubits = int(math.log(len(quantum_state),2))
 
     # check if input matrix is a 2x2 matrix
-    if cmp(gate_matrix.shape, (2,2)) != 0:
+    if (gate_matrix.shape > (2,2)) - (gate_matrix.shape < (2,2)) != 0:
         raise StandardError('Cannot create total unitary. '\
                         'Input matrix must be 2x2.')
 

@@ -3,7 +3,7 @@ import numpy as np # for numerics
 import random # for random number generation
 from math import sqrt,pi,e # some common function
 import math
-import qutip as qp # qutip library for Bloch sphere visualisations
+#import qutip as qp # qutip library for Bloch sphere visualisations
 import cmath # library for complex numbers
 from collections import Counter
 from tabulate import tabulate # for nice printing
