@@ -280,7 +280,7 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
                 target = save_control
 
             # initialize empty 4 x 4 matrix for controlled gate
-            cgate = np.zeros((4,4))
+            cgate = np.zeros((4,4),dtype=np.complex128)
 
             # if control position is reached:
             # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
@@ -316,8 +316,22 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
                     return quantum_state
 
-            # apply the 2**n x 2**n matrix to the quantum state
-            quantum_state = np.dot(cgate,quantum_state)
+            if checker:
+                save_control = control
+                control = target
+                target = save_control
+
+
+            # use the Hadamard trick to reverse the direction of the CNOT gate
+            if control > target:
+                quantum_state = apply_unitary(H,[control],quantum_state)
+                quantum_state = apply_unitary(H,[target],quantum_state)
+                quantum_state = np.dot(cgate,quantum_state)
+                quantum_state = apply_unitary(H,[control],quantum_state)
+                quantum_state = apply_unitary(H,[target],quantum_state)
+            else:
+                # apply the 2**n x 2**n matrix to the quantum state
+                quantum_state = np.dot(cgate,quantum_state)
 
             return quantum_state
 

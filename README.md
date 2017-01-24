@@ -61,10 +61,10 @@ INPUTS:
 
 -> `num_qubits`: number of qubits of the quantum system.
 
--> `lis`: if `lis` is a list of integers with length < num_qubits, it is
+-> `lis`: if `lis` is a list of integers with length < 2^num_qubits, it is
 				interpreted as a list of positions of nonzero amplitudes in a
 				uniform superposition. If `lis` is a list of numbers with
-				length = num_qubits, it is interpreted as an amplitude vector.
+				length = 2^num_qubits, it is interpreted as an amplitude vector.
 
 OUTPUT:
 
@@ -81,7 +81,7 @@ uniform superposition. The syntax is as follows:
 
 ```
 mynewstate = create_state(2, [0,3])
-print mynewstate
+print(mynewstate)
 ```
 
 This outputs the desired amplitude vector
@@ -99,7 +99,7 @@ To initialise a uniform superpositon over |00> and |01>, the following syntax ca
 be used:
 ```
 mynewstate = create_state(2, [1/sqrt(2),1/sqrt(2), 0,0])
-print mynewstate
+print(mynewstate)
 ```
 This outputs the desired amplitude vector
 `[ 0.70710678+0.j  0.70710678+0.j  0.00000000+0.j  0.00000000+0.j]`.
@@ -114,7 +114,7 @@ are not normalised then the function will automatically do it for you. For examp
 
 ```
 mynewstate = create_state(2, [1, 2, 3, 4])
-print mynewstate
+print(mynewstate)
 ```
 
 This will normalise the amplitude vector and inform you about it. The console
@@ -128,12 +128,12 @@ Note thate the state you generated was normalised automatically
 
 **Example 4:**
 
-If you specify more than 2**n amplitudes for n qubits the function will return
+If you specify more than 2^n amplitudes for n qubits the function will return
 an error. For example:
 
 ```
 mynewstate = create_state(2, [1,2,3,4,5])
-print mynewstate
+print(mynewstate)
 ```
 leads to the console output:
 ```
@@ -171,7 +171,7 @@ OUTPUT:
 ```
 state = np.array([1,2,3,4])
 my_normalised_state = renormalise(state)
-print my_normalised_state
+print(my_normalised_state)
 ```
 This outputs the normalised amplitude vector
 `[ 0.18257419  0.36514837  0.54772256  0.73029674]`.
@@ -201,13 +201,13 @@ OUTPUT:
 **Example 1:**
 
 ```
-print is_normalised([ 0.707,  0.,     0.,     0.707])
+print(is_normalised([ 0.707,  0.,     0.,     0.707]))
 ```
 This outputs `True`.
 
 
 ```
-print is_normalised([ 1, 2, 3, 4])
+print(is_normalised([ 1, 2, 3, 4]))
 ```
 This outputs `False`.
 
