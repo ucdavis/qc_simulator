@@ -61,12 +61,12 @@ INPUTS:
 
 -> `num_qubits`: number of qubits of the quantum system.
 
--> `list_type`: Two options:
+-> `list_type`: A string with two options:
 
->-- `indices` if you want to initialise a specific qubit state with probability
+>-- `"indices"` if you want to initialise a specific qubit state with probability
 1 or a uniform superposition over particular qubit states
 
->-- `amplitudes` if you want to specify the individual amplitudes of the state
+>-- `"amplitudes"` if you want to specify the individual amplitudes of the state
 
 -> `lis`: Two possibilities:
 
