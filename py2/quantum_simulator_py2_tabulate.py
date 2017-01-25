@@ -33,11 +33,12 @@ def Rz(angle):
     return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
 
 #################### State functions
-def create_state(num_qubits, lis):
-    state = np.zeros(num_qubits,dtype=np.complex128)
+def create_state(num_qubits, list_type, lis):
+    state = np.zeros(num_qubits)
     # if the list has less entries than amplitudes (2**n),
     # interpret the entries as positions
-    if len(lis) < 2**num_qubits:
+    #if len(lis) < 2**num_qubits:
+    if list_type == "indices":
         # check if all entries are valid positions
         if any(isinstance(item, complex) or item > 2**num_qubits \
                    or not isinstance(item, int) for item in lis) :
@@ -45,21 +46,21 @@ def create_state(num_qubits, lis):
                                     ' Please enter a list of valid positions.')
         # initialise state
         state = np.array([1./sqrt(len(lis)) if i in lis else 0 \
-                                 for i in range(2**num_qubits)],dtype=np.complex128)
+                                 for i in range(2**num_qubits)])
     # else if the list has as many entries as amplitudes (2**n),
     # interpret the entries as amplitudes
-    elif len(lis) == 2**num_qubits:
-        state = np.array(lis,dtype=np.complex128)
+    #elif len(lis) == 2**num_qubits:
+    elif list_type == "amplitudes":
+        state = np.array(lis)
         if not is_normalised(state):
             state = renormalise(state)
-            print 'Note thate the state you generated was normalised ' \
-                    'automatically '
+            print( 'Note thate the state you generated was normalised ' \
+                    'automatically ')
 
     else:
         raise StandardError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid amplitudes or positions.')
     return state
-
 
 
 def renormalise(state): # Renormalise the amplitude vector to unit length

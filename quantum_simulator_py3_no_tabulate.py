@@ -34,11 +34,12 @@ def Rz(angle):
     return np.array([[cmath.exp(-i_*angle/2),0],[0,cmath.exp(i_*angle/2)]])
 
 #################### State functions
-def create_state(num_qubits, lis):
+def create_state(num_qubits, list_type, lis):
     state = np.zeros(num_qubits)
     # if the list has less entries than amplitudes (2**n),
     # interpret the entries as positions
-    if len(lis) < 2**num_qubits:
+    #if len(lis) < 2**num_qubits:
+    if list_type == "indices":
         # check if all entries are valid positions
         if any(isinstance(item, complex) or item > 2**num_qubits \
                    or not isinstance(item, int) for item in lis) :
@@ -49,7 +50,8 @@ def create_state(num_qubits, lis):
                                  for i in range(2**num_qubits)])
     # else if the list has as many entries as amplitudes (2**n),
     # interpret the entries as amplitudes
-    elif len(lis) == 2**num_qubits:
+    #elif len(lis) == 2**num_qubits:
+    elif list_type == "amplitudes":
         state = np.array(lis)
         if not is_normalised(state):
             state = renormalise(state)
@@ -69,7 +71,7 @@ def renormalise(state): # Renormalise the amplitude vector to unit length
         return state
 
 def is_normalised(state): #Check if a state is normalised
-    if np.isclose(float(np.vdot(state,state)), float(1.0),rtol = 1e-03):
+    if np.isclose(np.real(np.vdot(state,state)), float(1.0),rtol = 1e-03):
         return True
     else:
         return False
