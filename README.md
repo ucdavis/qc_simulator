@@ -54,17 +54,27 @@ number of examples and explanations.
 General syntax:
 
 ```
-create_state(num_qubits, lis)
+create_state(num_qubits, list_type, lis)
 ```
 
 INPUTS:
 
 -> `num_qubits`: number of qubits of the quantum system.
 
--> `lis`: if `lis` is a list of integers with length < 2^num_qubits, it is
-				interpreted as a list of positions of nonzero amplitudes in a
-				uniform superposition. If `lis` is a list of numbers with
-				length = 2^num_qubits, it is interpreted as an amplitude vector.
+-> `list_type`: Two options:
+
+>-- `indices` if you want to initialise a specific qubit state with probability
+1 or a uniform superposition over particular qubit states
+
+>-- `amplitudes` if you want to specify the individual amplitudes of the state
+
+-> `lis`: Two possibilities:
+
+>-- if `list_type` = `indices`, `lis` is interpreted as a list of indices
+of qubit states which will be put in a uniform superposition.
+
+>--If `list_type` = `amplitudes`,`lis` must be a list of numbers with
+length = 2^num_qubits. The quantum state will then be initialized with the specified amplitudes.
 
 OUTPUT:
 
